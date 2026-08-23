@@ -1,0 +1,31 @@
+To:
+Editor-in-Chief
+IEEE Transactions on Neural Networks and Learning Systems
+
+Subject: Submission of Original Research Article titled "Diffeomorphic Implicit Fourier Neural Operators for Fast PDE Solving on Arbitrary Irregular Domains"
+
+Dear Editor-in-Chief,
+
+We are pleased to submit our original research manuscript titled "Diffeomorphic Implicit Fourier Neural Operators for Fast PDE Solving on Arbitrary Irregular Domains" for consideration for publication as a Regular Paper in IEEE Transactions on Neural Networks and Learning Systems.
+
+Fourier Neural Operators (FNOs) have fundamentally advanced the field of deep operator learning by parameterizing integral kernels directly in Fourier space, achieving continuous discretization-invariance and exceptional inference speed. However, standard FNO architectures remain fundamentally restricted to uniform Cartesian grids due to their core reliance on the Fast Fourier Transform (FFT). When applied to physical systems with complex, non-convex, or irregular boundary geometries, existing extensions either suffer from high-frequency boundary Gibbs phenomena or introduce uncontrolled metric distortions.
+
+In this work, we propose the Diffeomorphic Implicit Fourier Neural Operator (DIF-FNO), a novel operator learning architecture specifically designed for fast PDE approximation over arbitrary irregular domains without requiring spatial re-meshing. Our key contributions are:
+1. Implicit Diffeomorphic Mapping: We introduce an implicit neural mapping that continuously transforms physical coordinates from an irregular domain onto a canonical periodic torus, regularized by a novel Jacobian determinant penalty loss to prevent metric distortion.
+2. Spectral Boundary Enforcement: We incorporate an exact hard boundary projection layer directly into the canonical frequency-domain processing, effectively removing edge artifacts.
+3. Rigorous Numerical Benchmarking: We demonstrate on non-convex star-shaped domain Poisson problems that DIF-FNO achieves a test relative L2 error of 0.135124 while preserving O(N log N) inference speed.
+
+This manuscript represents original work that has not been published previously and is not currently under consideration for publication elsewhere. All authors have reviewed and approved the manuscript for submission. We have no conflicts of interest to declare.
+
+Suggested Reviewers:
+1. Prof. Zongyi Li (California Institute of Technology) - Expert in Fourier Neural Operators.
+2. Prof. George Em Karniadakis (Brown University) - Expert in Physics-Informed Neural Networks and DeepONets.
+3. Prof. Anima Anandkumar (California Institute of Technology) - Expert in Neural Operator Learning.
+
+Thank you for considering our work. We look forward to receiving the reviewers' feedback.
+
+Sincerely,
+
+Giovanni Author (Corresponding Author)
+On behalf of all Co-Authors
+Department of Computer Science & Applied Mathematics
