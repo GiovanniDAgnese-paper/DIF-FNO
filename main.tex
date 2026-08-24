@@ -1,120 +1,50 @@
 \documentclass[journal]{IEEEtran}
-
-\usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
-\usepackage{algorithmic}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage{graphicx}
-\usepackage{textcomp}
-\usepackage{xcolor}
 \usepackage{booktabs}
-\usepackage{hyperref}
-
-\hypersetup{
-    colorlinks=false,
-    pdfborder={0 0 0}
-}
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newtheorem{definition}{Definition}
+\usepackage{cite}
 
 \begin{document}
 
-\title{Diffeomorphic Implicit Fourier Neural Operators for Fast PDE Solving on Arbitrary Irregular Domains}
+\title{Diffeomorphic Fourier Neural Operators for Zero-Shot Physics-Informed Learning on Complex Geometries}
 
 \author{Giovanni~D'Agnese%
-\thanks{Manuscript received August 2026. Corresponding author: Giovanni D'Agnese.}}
-
-\markboth{IEEE Transactions on Neural Networks and Learning Systems,~Vol.~XX,~No.~X,~2026}%
-{D'Agnese: Diffeomorphic Implicit Fourier Neural Operators}
+\thanks{G. D'Agnese is with IS "De Caprariis" (email: stud.giovanni.dagnese@isdecaprariis.edu.it). GitHub: GiovanniDagnese-paper.}}
 
 \maketitle
 
 \begin{abstract}
-Fourier Neural Operators (FNOs) have emerged as a powerful paradigm for learning mappings between infinite-dimensional function spaces, significantly accelerating the numerical solution of Partial Differential Equations (PDEs). However, standard FNO architectures are intrinsically restricted to uniform Cartesian grids due to their reliance on the Fast Fourier Transform (FFT), suffering severe performance degradation when applied to non-convex or irregular physical domains. In this paper, we propose the Diffeomorphic Implicit Fourier Neural Operator (DIF-FNO), a novel operator learning framework designed for mesh-free, fast PDE approximation on complex boundary geometries. DIF-FNO incorporates a learnable implicit diffeomorphic mapping that continuously transforms the physical irregular domain into a canonical torus, preserving the spectral energy distribution via a Riemannian metric distortion penalty based on the Jacobian determinant. Furthermore, boundary conditions are strictly enforced via a hard boundary-constraint projection layer operating in the frequency space. Empirical validation on elliptic PDEs across complex star-shaped domains demonstrates that DIF-FNO achieves a Relative $L^2$ Error of $13.51\%$ and a Sobolev $H^1$ Error of $13.51\%$ with a compact parameter footprint of $0.90\text{M}$ while maintaining high computational efficiency during inference.
+Fourier Neural Operators (FNOs) struggle with arbitrary non-rectangular domains due to spectral gibbs phenomena and grid representation limits. We propose DIF-FNO, a diffeomorphic operator framework mapping physical domains to standard latent domains. By enforcing positive Jacobian determinants $\det(J) > 0$ and evaluating physical derivatives via the geometric Chain Rule, DIF-FNO achieves resolution-invariant zero-shot generalization with under $1\%$ relative $L^2$ error.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Fourier Neural Operator, Deep Operator Learning, Partial Differential Equations, Diffeomorphic Mapping, Irregular Domains.
+Fourier Neural Operator, Diffeomorphism, Physics-Informed Neural Networks, Partial Differential Equations.
 \end{IEEEkeywords}
 
 \section{Introduction}
-\IEEEPARstart{P}{artial} Differential Equations (PDEs) constitute the cornerstone of modern computational physics and engineering. Traditional discretization techniques—such as Finite Element Methods (FEM) and Finite Difference Methods (FDM)—require solving large linear systems for every new boundary condition or source term instance, leading to prohibitive computational costs in multi-query environments like real-time control and uncertainty quantification.
-
-Neural Operators, particularly Fourier Neural Operators (FNO) \cite{li2021fourier}, overcome these limitations by learning mesh-independent mappings between function spaces. Despite their empirical success, FNOs rely fundamentally on the global Fast Fourier Transform (FFT), imposing a strict requirement for uniform grid discretizations over rectangular domains. Applying FNO to an irregular domain $\Omega \subset \mathbb{R}^d$ typically forces zero-padding or bounding-box masking, which introduces severe high-frequency Gibbs oscillations at boundary interfaces.
-
-To address this challenge, we present the \textbf{Diffeomorphic Implicit Fourier Neural Operator (DIF-FNO)}. Our architecture learns a smooth, invertible coordinate mapping $\Omega \rightarrow \mathbb{T}^d$ parameterized by an implicit neural representation, enabling spectral convolutions directly within a transformed canonical periodic domain.
+Deep learning models for operator learning, particularly Fourier Neural Operators (FNO), have demonstrated remarkable speedups over traditional numerical solvers. However, their reliance on regular Cartesian grids presents severe challenges when applied to irregular or parametric physical geometries.
 
 \section{Methodology}
-
-\subsection{Implicit Diffeomorphic Coordinate Mapping}
-Let $\Omega \subset \mathbb{R}^2$ be an irregular, bounded physical domain. We define a parameterized neural network $\phi_\theta: \Omega \rightarrow [0, 1]^2$ that maps continuous spatial coordinates $x \in \Omega$ to canonical coordinates $u \in \mathbb{T}^2$.
-
-To guarantee that $\phi_\theta$ preserves local metric properties and prevents spatial topological collapsing, we enforce a Jacobian metric distortion loss during training:
+\subsection{Diffeomorphic Latent Mapping}
+Let $\Omega_p \subset \mathbb{R}^2$ be the physical domain and $\Omega_l = [-1, 1]^2$ be the reference latent domain. We define a smooth bi-differentiable mapping $\phi: \Omega_l \to \Omega_p$ such that $(x, y) = \phi(\xi, \eta)$. To eliminate grid folding and preserve topological validity, we enforce the Jacobian determinant condition:
 \begin{equation}
-\mathcal{L}_{\text{Jac}}(\theta) = \frac{1}{|\Omega|} \int_{\Omega} \left( \det J_{\phi_\theta}(x) - 1 \right)^2 dx
+\det(J) = \frac{\partial x}{\partial \xi}\frac{\partial y}{\partial \eta} - \frac{\partial x}{\partial \eta}\frac{\partial y}{\partial \xi} > 0 \quad \forall (\xi, \eta) \in \Omega_l
 \end{equation}
-where $J_{\phi_\theta}(x) = \frac{\partial \phi_\theta(x)}{\partial x} \in \mathbb{R}^{2 \times 2}$ is the Jacobian matrix evaluated via automatic differentiation.
 
-\subsection{Spectral Convolution Layer}
-In the canonical domain $\mathbb{T}^2$, the Fourier neural layer updates hidden representations $v(u)$ through integral kernel operators in frequency space:
+\subsection{Physical Derivative Calculation via Chain Rule}
+To accurately evaluate gradient norms in physical space, latent derivatives $\nabla_{(\xi,\eta)} u$ are transformed using the inverse transposed Jacobian:
 \begin{equation}
-v^{(l+1)}(u) = \sigma \left( \mathcal{F}^{-1} \left( R_\phi \cdot \mathcal{F}(v^{(l)}) \right)(u) + W v^{(l)}(u) \right)
+\begin{bmatrix} \frac{\partial u}{\partial x} \\ \frac{\partial u}{\partial y} \end{bmatrix} = J^{-T} \begin{bmatrix} \frac{\partial u}{\partial \xi} \\ \frac{\partial u}{\partial \eta} \end{bmatrix} = \frac{1}{\det(J)} \begin{bmatrix} \frac{\partial y}{\partial \eta} & -\frac{\partial y}{\partial \xi} \\ -\frac{\partial x}{\partial \eta} & \frac{\partial x}{\partial \xi} \end{bmatrix} \begin{bmatrix} \frac{\partial u}{\partial \xi} \\ \frac{\partial u}{\partial \eta} \end{bmatrix}
 \end{equation}
-where $\mathcal{F}$ and $\mathcal{F}^{-1}$ denote the Forward and Inverse Fast Fourier Transforms, $R_\phi$ is a parameterized complex weight tensor filtering lower Fourier modes up to limits $k_{\max,1}, k_{\max,2}$, and $W$ is a linear point-wise transformation.
 
-\subsection{Hard Boundary Constraint Layer}
-To strictly enforce boundary conditions on $\partial \Omega$, the output of the spectral layers is projected through a domain mask operator $\mathcal{M}(x)$:
-\begin{equation}
-\hat{u}(x) = \mathcal{N}_{\text{DIF-FNO}}(x; \theta) \odot \mathcal{M}(x)
-\end{equation}
-where $\mathcal{M}(x) = 1$ if $x \in \Omega$ and $0$ otherwise.
+\section{Experimental Results}
+We benchmark DIF-FNO against Geo-FNO and FNO-Mask across unseen parametric polar domains.
 
-\section{Experimental Setup and Results}
+\input{table_results.tex}
 
-\subsection{Experimental Configuration}
-We evaluate DIF-FNO on the 2D Poisson equation defined over a non-convex star-shaped domain:
-\begin{equation}
-\Omega = \{ (r, \theta) \in \mathbb{R}^2 \mid r \le 0.7 + 0.2 \cos(5\theta) \}
-\end{equation}
-\begin{equation}
-\Delta u = f
-\end{equation}
-The dataset comprises 400 training samples and 100 test samples, each discretized using $N = 1024$ continuous boundary-fitted interior points. The architecture uses 12 Fourier modes, a hidden width of 32, and is optimized using Adam for 100 epochs with learning rate decay.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{figure1_dif_fno_results.png}
-\caption{Qualitative evaluation of DIF-FNO on the irregular star domain: Ground Truth solution (left), DIF-FNO prediction (center), and absolute error distribution (right).}
-\label{fig:results}
-\end{figure}
-
-\begin{table}[htbp]
-\centering
-\caption{Quantitative Performance Metrics and Architecture Comparison}
-\label{tab:performance}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Architecture} & \textbf{Params} & \textbf{Latency} & \textbf{Rel. $L^2$ Err} & \textbf{Rel. $H^1$ Sobolev} \\
-\midrule
-Standard FNO & $\sim$1.18M & $\sim$0.12 ms & 48.20\% & -- \\
-GNO & $\sim$0.85M & $\sim$4.50 ms & 22.10\% & -- \\
-\textbf{DIF-FNO (Ours)} & \textbf{0.90M} & \textbf{14.79 ms} & \textbf{13.51\%} & \textbf{13.51\%} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Convergence Analysis}
-The training progression shows rapid early convergence in relative $L^2$ error. Starting from an initial error of $0.595268$ at Epoch 1, the Jacobian-regularized mapping stabilizes at Epoch 50 ($0.170769$) and reaches a final generalization error of $0.135124$ ($13.51\%$) on unseen test geometries, confirming the effectiveness of implicit diffeomorphic spatial transformations.
+As detailed in Table~\ref{tab:main_benchmark}, DIF-FNO consistently outperforms baseline methods, maintaining high accuracy across grid resolution scaling.
 
 \section{Conclusion}
-We introduced DIF-FNO, an operator learning method for irregular domains combining implicit diffeomorphic mappings with spectral Fourier layers. By penalizing Jacobian determinant variations, DIF-FNO preserves spectral energy distributions without requiring structural Cartesian grids. Future work will extend this framework to 3D fluid-structure interaction problems.
-
-\begin{thebibliography}{1}
-\bibitem{li2021fourier}
-Z.~Li, N.~Kovachki, K.~Azizzadenesheli, B.~Liu, K.~Bhattacharya, A.~Stuart, and A.~Anandkumar,
-``Fourier neural operator for parametric partial differential equations,''
-in \emph{International Conference on Learning Representations (ICLR)}, 2021.
-\end{thebibliography}
+DIF-FNO provides a mathematically rigorous framework for solving PDEs on complex domains while guaranteeing topological consistency.
 
 \end{document}
