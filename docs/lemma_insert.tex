@@ -1,0 +1,4 @@
+\newtheorem{lemma}{Lemma}
+\begin{lemma}[Topological Non-Collapse Guarantee]
+Let $\phi: \Omega_l \to \Omega_p$ be a $C^1$ spatial mapping parameterized by a neural network. If the Jacobian Barrier Loss $\mathcal{L}_{\text{barrier}} = \int_{\Omega_l} \max(0, \epsilon - \det(J_{\phi}(\xi)))^2 d\xi = 0$, then $\phi$ defines a strictly local diffeomorphism over $\Omega_l$, preventing metric collapse ($\det(J_\phi) > 0$) and grid folding.
+\end{lemma}
