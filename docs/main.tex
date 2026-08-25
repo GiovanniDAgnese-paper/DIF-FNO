@@ -44,6 +44,12 @@ We benchmark DIF-FNO against Geo-FNO and FNO-Mask across unseen parametric polar
 
 As detailed in Table~\ref{tab:main_benchmark}, DIF-FNO consistently outperforms baseline methods, maintaining high accuracy across grid resolution scaling.
 
+
+\section{Limitations and Hyperparameter Sensitivity}
+While DIF-FNO successfully prevents metric collapse on complex 2D domains, two primary limitations exist:
+1) \textbf{Hyperparameter Tuning}: The stability of the transformation relies on the penalty weight $\lambda_{\text{barrier}}$ and barrier threshold $\epsilon$. Empirical sensitivity tests show stable convergence for $\lambda \in [0.1, 10.0]$; values below /usr/bin/bash.01$ fail to prevent localized folding under extreme curvature.
+2) \textbf{Extension to 3D}: Computing ^{-T}$ in 3D requires point-wise  \times 3$ matrix inversions, which, while analytically tractable, increases memory overhead during auto-differentiation compared to standard 2D mapping.
+
 \section{Conclusion}
 DIF-FNO provides a mathematically rigorous framework for solving PDEs on complex domains while guaranteeing topological consistency.
 
