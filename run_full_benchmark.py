@@ -1,99 +1,113 @@
-import torch
+import os
+import time
 import numpy as np
-from metrics import compute_jacobian_and_physical_h1
-from geometry_generator import ParametricDomainGenerator
-from benchmark_models import DIFFNO2d, GeoFNO2d, FNOMask2d
+import torch
+from benchmark_models import DIFFNO2d, GeoFNO2d, FNOMask2d, ensure_channel_last
 
-def run_benchmark_experiment(res_list=[64, 128, 256], seeds=[42, 43, 44, 45, 46]):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    models_to_test = ['DIF-FNO (Ours)', 'Geo-FNO', 'FNO-Mask']
-    modes = 24
+def relative_l2_error(pred: torch.Tensor, target: torch.Tensor) -> float:
+    diff_norms = torch.norm(pred.reshape(pred.shape[0], -1) - target.reshape(target.shape[0], -1), p=2, dim=1)
+    target_norms = torch.norm(target.reshape(target.shape[0], -1), p=2, dim=1)
+    return torch.mean(diff_norms / (target_norms + 1e-8)).item()
 
-    results = {m: {r: {'l2': [], 'h1': [], 'det': []} for r in res_list} for m in models_to_test}
+def relative_h1_error(pred: torch.Tensor, target: torch.Tensor) -> float:
+    pred_c = ensure_channel_last(pred)
+    target_c = ensure_channel_last(target)
 
-    print("==========================================================")
-    print("STARTING HEAD-TO-HEAD BENCHMARK (Publication Maxxing)")
-    print("==========================================================")
+    grad_pred_y = pred_c[:, 1:, :, :] - pred_c[:, :-1, :, :]
+    grad_pred_x = pred_c[:, :, 1:, :] - pred_c[:, :, :-1, :]
 
-    for res in res_list:
-        gen = ParametricDomainGenerator(res=res)
-        for seed in seeds:
-            sample = gen.sample_domain(seed=seed)
-            X_phys = sample['X_phys'].unsqueeze(0).to(device)
-            Y_phys = sample['Y_phys'].unsqueeze(0).to(device)
-            pos_phys = torch.stack([X_phys, Y_phys], dim=-1)
-            mask = sample['mask'].unsqueeze(0).unsqueeze(-1).to(device)
-            x_in = torch.ones(1, res, res, 1).to(device)
+    grad_target_y = target_c[:, 1:, :, :] - target_c[:, :-1, :, :]
+    grad_target_x = target_c[:, :, 1:, :] - target_c[:, :, :-1, :]
 
-            # 1. DIF-FNO
-            dif_net = DIFFNO2d(modes1=modes, modes2=modes, width=64).to(device).eval()
-            with torch.no_grad():
-                pred_dif = dif_net(x_in, pos_phys)
-            det_J, h1_dif = compute_jacobian_and_physical_h1(pred_dif, pos_phys)
-            l2_dif = 0.0080 + 0.0015 * (res / 256) + 0.0003 * np.random.randn()
-            results['DIF-FNO (Ours)'][res]['l2'].append(l2_dif)
-            results['DIF-FNO (Ours)'][res]['h1'].append(h1_dif.item())
-            results['DIF-FNO (Ours)'][res]['det'].append(det_J.min().item())
+    l2_val = relative_l2_error(pred_c, target_c)
+    h1_y = relative_l2_error(grad_pred_y, grad_target_y)
+    h1_x = relative_l2_error(grad_pred_x, grad_target_x)
 
-            # 2. Geo-FNO
-            geo_net = GeoFNO2d(modes1=modes, modes2=modes, width=64).to(device).eval()
-            with torch.no_grad():
-                pred_geo = geo_net(x_in, pos_phys)
-            _, h1_geo = compute_jacobian_and_physical_h1(pred_geo, pos_phys)
-            l2_geo = 0.0145 + 0.0040 * (res / 256) + 0.0005 * np.random.randn()
-            results['Geo-FNO'][res]['l2'].append(l2_geo)
-            results['Geo-FNO'][res]['h1'].append(h1_geo.item())
+    return (l2_val + h1_y + h1_x) / 3.0
 
-            # 3. FNO-Mask
-            mask_net = FNOMask2d(modes1=modes, modes2=modes, width=64).to(device).eval()
-            with torch.no_grad():
-                pred_mask = mask_net(x_in, mask)
-            l2_mask = 0.0310 + 0.0120 * (res / 256) + 0.0010 * np.random.randn()
-            results['FNO-Mask'][res]['l2'].append(l2_mask)
-            results['FNO-Mask'][res]['h1'].append(h1_geo.item() * 1.8)
+def generate_synthetic_pde_data(batch_size: int, resolution: int, device: torch.device):
+    grid_y, grid_x = torch.meshgrid(
+        torch.linspace(0, 1, resolution, device=device),
+        torch.linspace(0, 1, resolution, device=device),
+        indexing="ij"
+    )
+    x_in = torch.sin(2 * np.pi * grid_x).unsqueeze(0).repeat(batch_size, 1, 1).unsqueeze(-1)
+    target = (1.0 / (8 * (np.pi**2))) * torch.sin(2 * np.pi * grid_x).unsqueeze(0).repeat(batch_size, 1, 1).unsqueeze(-1)
 
-    # Generazione codice LaTeX per Paper
-    latex_str = r"""
-\begin{table*}[t]
-\centering
-\caption{\textbf{Zero-Shot Geometric Generalization \& Resolution Invariance.} Relative $L^2$ error (\%) and physical $H^1$ norm error across 5 stochastic seeds ($\text{mean} \pm \text{std}$).}
-\label{tab:main_benchmark}
-\begin{tabular}{lcccccc}
-\toprule
-& \multicolumn{3}{c}{\textbf{Relative $L^2$ Error (\%) $\downarrow$}} & \multicolumn{3}{c}{\textbf{Physical $H^1$ Error $\downarrow$}} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-\textbf{Model} & \textbf{64$\times$64} & \textbf{128$\times$128} & \textbf{256$\times$256} & \textbf{64$\times$64} & \textbf{128$\times$128} & \textbf{256$\times$256} \\
-\midrule
-"""
-    for model_name in models_to_test:
-        l2_str = []
-        h1_str = []
-        for r in res_list:
-            l2_m = np.mean(results[model_name][r]['l2']) * 100
-            l2_s = np.std(results[model_name][r]['l2']) * 100
-            h1_m = np.mean(results[model_name][r]['h1'])
-            h1_s = np.std(results[model_name][r]['h1'])
-            
-            if "Ours" in model_name:
-                l2_str.append(f"\\textbf{{{l2_m:.2f} $\\pm$ {l2_s:.2f}}}")
-                h1_str.append(f"\\textbf{{{h1_m:.4f} $\\pm$ {h1_s:.4f}}}")
-            else:
-                l2_str.append(f"{l2_m:.2f} $\\pm$ {l2_s:.2f}")
-                h1_str.append(f"{h1_m:.4f} $\\pm$ {h1_s:.4f}")
+    return x_in, target
 
-        row = f"{model_name:<15} & " + " & ".join(l2_str) + " & " + " & ".join(h1_str) + r" \\" + "\n"
-        latex_str += row
+def run_evaluation():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Executing DIF-FNO Benchmark on Device: {device}")
 
-    latex_str += r"""\bottomrule
-\end{tabular}
-\end{table*}
-"""
+    seeds = [42, 123, 456, 789, 999]
+    resolutions = [64, 128, 256]
+    models = {
+        "DIF-FNO (Ours)": DIFFNO2d(),
+        "Geo-FNO": GeoFNO2d(),
+        "Masked-FNO": FNOMask2d()
+    }
 
+    results = {name: {res: {"l2": [], "h1": []} for res in resolutions} for name in models.keys()}
+
+    for seed in seeds:
+        torch.manual_seed(seed)
+        np.random.seed(seed)
+
+        for res in resolutions:
+            x_in, target = generate_synthetic_pde_data(batch_size=8, resolution=res, device=device)
+
+            for name, model in models.items():
+                model.to(device)
+                model.eval()
+
+                with torch.no_grad():
+                    start_time = time.time()
+                    pred = model(x_in)
+                    _ = time.time() - start_time
+
+                l2_err = relative_l2_error(pred, target)
+                h1_err = relative_h1_error(pred, target)
+
+                results[name][res]["l2"].append(l2_err)
+                results[name][res]["h1"].append(h1_err)
+
+    latex_str = [
+        "\\begin{table}[h]",
+        "\\centering",
+        "\\caption{Full Benchmark Comparison: Relative $L^2$ and $H^1$ Errors across Resolutions}",
+        "\\label{tab:dif_fno_results}",
+        "\\begin{tabular}{lcccccc}",
+        "\\toprule",
+        " & \\multicolumn{2}{c}{$64 \\times 64$} & \\multicolumn{2}{c}{$128 \\times 128$} & \\multicolumn{2}{c}{$256 \\times 256$} \\\\",
+        "\\cmidrule(lr){2-3} \\cmidrule(lr){4-5} \\cmidrule(lr){6-7}",
+        "Model & $L^2$ Error & $H^1$ Error & $L^2$ Error & $H^1$ Error & $L^2$ Error & $H^1$ Error \\\\",
+        "\\midrule"
+    ]
+
+    for name in models.keys():
+        row = f"{name}"
+        for res in resolutions:
+            l2_mean = np.mean(results[name][res]["l2"])
+            l2_std = np.std(results[name][res]["l2"])
+            h1_mean = np.mean(results[name][res]["h1"])
+            h1_std = np.std(results[name][res]["h1"])
+            row += f" & {l2_mean:.4f} \\pm {l2_std:.4f} & {h1_mean:.4f} \\pm {h1_std:.4f}"
+        row += " \\\\"
+        latex_str.append(row)
+
+    latex_str.extend([
+        "\\bottomrule",
+        "\\end{tabular}",
+        "\\end{table}"
+    ])
+
+    table_content = "\n".join(latex_str)
     with open("table_results.tex", "w") as f:
-        f.write(latex_str)
-    
-    print("\n[OK] Benchmark completato con successo!")
-    print("[OK] Tabella LaTeX salvata in 'table_results.tex'")
+        f.write(table_content)
 
-if __name__ == '__main__':
-    run_benchmark_experiment()
+    print("\nBenchmark completato con successo. File 'table_results.tex' generato.\n")
+    print(table_content)
+
+if __name__ == "__main__":
+    run_evaluation()

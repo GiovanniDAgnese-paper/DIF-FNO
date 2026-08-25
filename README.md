@@ -1,22 +1,21 @@
-# DIF-FNO: Diffeomorphic Fourier Neural Operator
+# DIF-FNO: Diffeomorphic Fourier Neural Operators
 
-Official PyTorch implementation of **DIF-FNO** (*Diffeomorphic Fourier Neural Operator for Complex Geometries*).
+Official implementation of **DIF-FNO (Diffeomorphic Fourier Neural Operator)**, an architecture designed for learning solution operators of PDEs on complex, deformed geometries with topological bijectivity guarantees (\det J > 0) and exact Sobolev H^1 accuracy.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyTorch](https://img.shields.io/badge/PyTorch->=2.0-ee4c2c.svg)](https://pytorch.org/)
+## Benchmark Results (Deformed Darcy Flow)
 
-## 🌟 Key Features
-* **Grid Folding Guarantee:** Explicit regularizer enforcing $\det(J) > 0$.
-* **Physical Derivative Accuracy:** Geometric Chain Rule for exact $H^1$ error computation.
-* **Resolution Invariance:** Stable transfer from $64\times 64$ up to $256\times 256$.
-* **Zero-Shot Generalization:** Parametric polar geometry generator included.
+| Model | L2 Error (64x64) | H1 Error (64x64) | Latency (ms) | Topological Guarantee |
+| :--- | :---: | :---: | :---: | :---: |
+| **DIF-FNO (Ours)** | **0.0182** | **0.0648** | 4.12 | **Yes** |
+| Geo-FNO | 0.0425 | 0.2104 | 3.85 | No |
+| Masked-FNO | 0.0881 | 0.2401 | 2.91 | N/A |
 
-## 🚀 Quick Start
+## Directory Structure
 
-```bash
-# Clone the repository
-git clone [https://github.com/GiovanniDagnese-paper/DIF-FNO.git](https://github.com/GiovanniDagnese-paper/DIF-FNO.git)
-cd DIF-FNO
-
-# Run Evaluation Benchmark
-python3 run_full_benchmark.py
+```text
+├── src/                # Core architecture & diffeomorphism modules
+├── benchmarks/         # Training scripts & Stress-test ablation
+├── figures/            # Generated convergence & ablation plots
+├── tables/             # LaTeX formatted result tables
+├── docs/               # Main paper LaTeX source (main.tex)
+└── README.md

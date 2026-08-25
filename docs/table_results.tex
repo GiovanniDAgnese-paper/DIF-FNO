@@ -1,0 +1,16 @@
+\begin{table}[h]
+\centering
+\caption{Deformed Darcy Flow Benchmark: Convergence Results}
+\label{tab:darcy_results}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{$64 \times 64$} & \multicolumn{2}{c}{$128 \times 128$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Model & $L^2$ Error & $H^1$ Error & $L^2$ Error & $H^1$ Error \\
+\midrule
+DIF-FNO (Ours) & 0.0541 \pm 0.0031 & 0.3173 \pm 0.0097 & 0.0617 \pm 0.0023 & 0.3679 \pm 0.0134 \\
+Geo-FNO & 0.0645 \pm 0.0046 & 0.2991 \pm 0.0047 & 0.0705 \pm 0.0039 & 0.3418 \pm 0.0023 \\
+Masked-FNO & 0.1042 \pm 0.0088 & 0.2986 \pm 0.0040 & 0.1074 \pm 0.0087 & 0.3243 \pm 0.0021 \\
+\bottomrule
+\end{tabular}
+\end{table}
