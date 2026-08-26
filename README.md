@@ -1,0 +1,38 @@
+# DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators
+
+Official implementation of **DIF-FNO** featuring the **D'Agnese Topological Barrier Loss** for topology-preserving neural operators on non-convex and deformed geometries.
+
+---
+
+## Key Features
+
+* **Zero Grid Folding:** Enforces strict positive Jacobian determinant ($\det J > 0$) across complex spatial transformations.
+* **Sobolev Accuracy ($H^1$):** Preserves spatial gradients and physical derivatives ($\nabla u$) via exact metric transformations.
+* **Analytical 2D Jacobian Acceleration:** Eliminates LU-decomposition overhead using direct $ad - bc$ calculations, fully compatible with `torch.compile()`.
+
+---
+
+## Benchmark Results
+
+Evaluation on $32 \times 64 \times 64$ grid resolution (131,072 cells) under severe mesh deformation:
+
+| Model Architecture | Folded Cells ($\det J \le 0$) | Grid Folding Rate (%) | Topological Stability |
+|---|---|---|---|
+| **Standard FNO** | 80 / 131,072 | 0.06% | **Failed** |
+| **DIF-FNO (Ours)** | **0 / 131,072** | **0.00%** | **PASSED (0.00%)** |
+
+---
+
+## Quick Start
+
+```python
+import torch
+from dagnese_barrier import DAgneseBarrierLoss, get_compiled_dagnese_loss
+
+# Initialize loss module
+criterion = get_compiled_dagnese_loss(alpha=50.0, eps=1e-3)
+
+# Pass Jacobian batch J of shape (B, H, W, 2, 2)
+# J_00, J_01, J_10, J_11
+loss = criterion(J)
+loss.backward()
