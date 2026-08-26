@@ -1,0 +1,9 @@
+=== DIF-FNO Benchmark Execution on cpu ===
+
+--- Training DIF-FNO (con Jacobian Barrier Loss) ---
+Epoch 025 | Loss: 0.003288 | Barrier: 0.000001 | Rel L2: 0.2821 | Rel H1: 0.8586
+Epoch 050 | Loss: 0.000435 | Barrier: 0.000001 | Rel L2: 0.1026 | Rel H1: 0.6315
+Epoch 075 | Loss: 0.000255 | Barrier: 0.000001 | Rel L2: 0.0785 | Rel H1: 0.5810
+Epoch 100 | Loss: 0.000226 | Barrier: 0.000001 | Rel L2: 0.0740 | Rel H1: 0.5566
+
+Benchmark completato in 49.80s
