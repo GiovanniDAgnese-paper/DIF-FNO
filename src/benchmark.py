@@ -7,7 +7,7 @@ from metrics import relative_l2_error, relative_h1_error
 
 def run_benchmark():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"=== DIF_FNO_Paper Benchmark Execution on {device} ===")
+    print(f"=== DIF-FNO Benchmark Execution on {device} ===")
     
     # Domini di test
     star_data = generate_star_domain(grid_size=64, num_samples=50).to(device)
