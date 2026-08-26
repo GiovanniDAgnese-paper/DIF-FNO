@@ -1,3 +1,8 @@
+> **💼 B2B Consulting & Custom Scientific ML Solutions**  
+> Available for technical consulting, custom PyTorch neural operator architectures, and CFD/FEA simulation acceleration. Contact via LinkedIn or email for project estimates.
+
+---
+
 # DIF-FNO: Diffeomorphic Fourier Neural Operator
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22071926.svg)](https://doi.org/10.5281/zenodo.22071926)
