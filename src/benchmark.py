@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import torch
 import torch.nn as nn
 import time
@@ -9,14 +13,11 @@ def run_benchmark():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"=== DIF-FNO Benchmark Execution on {device} ===")
     
-    # Domini di test
     star_data = generate_star_domain(grid_size=64, num_samples=50).to(device)
     
-    # Inizializzazione modello DIF-FNO
     model = DIFFNO2d(modes1=12, modes2=12, width=32).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     
-    # Dummy Target per simulazione PDE
     target = torch.sin(star_data[..., 0:1]) * torch.cos(star_data[..., 1:2])
     
     print("\n--- Training DIF-FNO (con Jacobian Barrier Loss) ---")
