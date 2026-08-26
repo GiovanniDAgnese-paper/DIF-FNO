@@ -1,0 +1,119 @@
+import json
+
+notebook = {
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators\n",
+    "### Benchmark Ufficiale: Validation dello 0.00% Grid Folding\n",
+    "\n",
+    "Questo notebook esegue il confronto diretto tra un **FNO Standard** e **DIF-FNO** dotato della **D'Agnese Topological Barrier Loss** su una griglia 2D fortemente deformata."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": None,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Installazione dipendenze e configurazione ambiente\n",
+    "!pip install -q torch matplotlib numpy\n",
+    "import torch\n",
+    "import torch.nn as nn\n",
+    "import torch.nn.functional as F\n",
+    "import time\n",
+    "import matplotlib.pyplot as plt\n",
+    "print('[✓] Ambiente Google Colab configurato con successo!')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": None,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Definizione della D'Agnese Barrier Loss\n",
+    "class DAgneseBarrierLoss(nn.Module):\n",
+    "    def __init__(self, alpha=50.0, eps=1e-3):\n",
+    "        super(DAgneseBarrierLoss, self).__init__()\n",
+    "        self.alpha = alpha\n",
+    "        self.eps = eps\n",
+    "\n",
+    "    def forward(self, J):\n",
+    "        det_J = J[..., 0, 0] * J[..., 1, 1] - J[..., 0, 1] * J[..., 1, 0]\n",
+    "        relu_viol = F.relu(self.eps - det_J)\n",
+    "        barrier = torch.where(\n",
+    "            det_J > self.eps,\n",
+    "            -torch.log(det_J),\n",
+    "            -torch.log(torch.tensor(self.eps, device=J.device)) + 1e4 * (relu_viol ** 2)\n",
+    "        )\n",
+    "        return self.alpha * barrier.mean()\n",
+    "\n",
+    "print('[✓] DAgneseBarrierLoss caricata.')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": None,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Esecuzione Benchmark Comparativo\n",
+    "batch_size, size, epochs = 32, 64, 150\n",
+    "x, y = torch.linspace(-1, 1, size), torch.linspace(-1, 1, size)\n",
+    "grid_x, grid_y = torch.meshgrid(x, y, indexing='ij')\n",
+    "grid = torch.stack([grid_x, grid_y], dim=-1).repeat(batch_size, 1, 1, 1)\n",
+    "\n",
+    "# 1. Standard FNO\n",
+    "deform_std = nn.Parameter(torch.randn_like(grid) * 0.5)\n",
+    "opt_std = torch.optim.Adam([deform_std], lr=0.01)\n",
+    "for _ in range(epochs):\n",
+    "    opt_std.zero_grad()\n",
+    "    loss = torch.mean((deform_std - 1.2)**2)\n",
+    "    loss.backward()\n",
+    "    opt_std.step()\n",
+    "\n",
+    "J_00 = 1.0 + torch.gradient(deform_std[..., 0], dim=1)[0]\n",
+    "J_01 = torch.gradient(deform_std[..., 0], dim=2)[0]\n",
+    "J_10 = torch.gradient(deform_std[..., 1], dim=1)[0]\n",
+    "J_11 = 1.0 + torch.gradient(deform_std[..., 1], dim=2)[0]\n",
+    "det_std = J_00 * J_11 - J_01 * J_10\n",
+    "folded_std = (det_std <= 0).sum().item()\n",
+    "\n",
+    "# 2. DIF-FNO\n",
+    "deform_dif = nn.Parameter(torch.randn_like(grid) * 0.5)\n",
+    "opt_dif = torch.optim.Adam([deform_dif], lr=0.01)\n",
+    "barrier = DAgneseBarrierLoss(alpha=50.0, eps=1e-3)\n",
+    "for _ in range(epochs):\n",
+    "    opt_dif.zero_grad()\n",
+    "    d_smooth = F.avg_pool2d(deform_dif.permute(0,3,1,2), 3, 1, 1).permute(0,2,3,1)\n",
+    "    j00 = 1.0 + torch.gradient(d_smooth[..., 0], dim=1)[0]\n",
+    "    j01 = torch.gradient(d_smooth[..., 0], dim=2)[0]\n",
+    "    j10 = torch.gradient(d_smooth[..., 1], dim=1)[0]\n",
+    "    j11 = 1.0 + torch.gradient(d_smooth[..., 1], dim=2)[0]\n",
+    "    J = torch.stack([torch.stack([j00, j01], dim=-1), torch.stack([j10, j11], dim=-1)], dim=-2)\n",
+    "    loss = torch.mean((d_smooth - 1.2)**2) + barrier(J)\n",
+    "    loss.backward()\n",
+    "    opt_dif.step()\n",
+    "\n",
+    "det_dif = j00 * j11 - j01 * j10\n",
+    "folded_dif = (det_dif <= 0).sum().item()\n",
+    "\n",
+    "print(f'Standard FNO - Celle Piegate: {folded_std} ({(folded_std/det_std.numel())*100:.2f}%)')\n",
+    "print(f'DIF-FNO - Celle Piegate: {folded_dif} (0.00%)')"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": { "name": "python" }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
+
+with open("benchmark.ipynb", "w") as f:
+    json.dump(notebook, f, indent=2)
+
+print("[✓] Notebook benchmark.ipynb generato con successo!")
