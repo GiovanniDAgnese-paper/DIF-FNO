@@ -7,7 +7,7 @@ setup(
     author_email="jovannidagnese2@gmail.com",
     description="Diffeomorphic Implicit Fourier Neural Operators with D'Agnese Topological Barrier Loss",
     long_description=open("README.md").read(),
-    long_description_content_content_type="text/markdown",
+    long_description_content_type="text/markdown",
     url="https://github.com/GiovanniDAgnese-paper/DIF-FNO",
     packages=find_packages(),
     classifiers=[

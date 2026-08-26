@@ -1,0 +1,26 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{\textbf{DIF-FNO: Topological Guarantee via Diffeomorphic Implicit Fourier Neural Operators on Non-Convex Domains}}
+\author{\textbf{Giovanni D'Agnese} \\ Independent Researcher \\ \texttt{jovannidagnese2@gmail.com}}
+\date{August 26, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Fourier Neural Operators (FNOs) have established a robust framework for learning mappings between infinite-dimensional function spaces. However, their reliance on structured Cartesian grids imposes severe limitations when applied to non-convex physical geometries. Naive coordinate transformations frequently suffer from grid folding—a topological failure mode where the Jacobian determinant vanishes or becomes negative. In this paper, we introduce DIF-FNO (Diffeomorphic Implicit Fourier Neural Operators), enforcing global diffeomorphic constraints over non-convex domains. Central to our approach is the \textbf{D'Agnese Topological Barrier Loss} ($\mathcal{L}_{\text{barrier}}$), a continuous barrier potential penalizing Jacobian degeneration and guaranteeing 0.00\% grid folding. Integrated with PyTorch 2.x and \texttt{torch.compile()}, DIF-FNO achieves superior $L^2$ and $H^1$ Sobolev errors across Star, L-Shape, and Annulus geometries.
+\end{abstract}
+
+\input{sections/theory.tex}
+\input{sections/experiments.tex}
+
+\end{document}

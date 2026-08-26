@@ -1,0 +1,17 @@
+\section{Methodology: Diffeomorphic Implicit Fourier Neural Operator}
+\label{sec:theory}
+
+Let $\Omega \subset \mathbb{R}^d$ be an irregular, non-convex physical domain. We define a smooth coordinate transformation $\phi: \Omega \to \hat{\Omega}$, mapping $\Omega$ to a uniform reference hypercube $\hat{\Omega} = [0,1]^d$.
+
+\subsection{Diffeomorphic Coordinate Mapping}
+To guarantee topological consistency and avoid grid folding during learning, the mapping $\phi$ must be a valid $C^1$-diffeomorphism with a strictly positive Jacobian determinant:
+\begin{equation}
+\det(J_\phi(x)) > 0, \quad \forall x \in \Omega
+\end{equation}
+
+\subsection{Jacobian Barrier Regularization}
+We enforce diffeomorphic invertibility via the \textbf{DAgnese Barrier Loss} functional $\mathcal{L}_{\text{barrier}}$, which diverges to infinity as $\det(J_\phi)$ approaches zero:
+\begin{equation}
+\mathcal{L}_{\text{barrier}} = -\int_{\Omega} \log \left( \max( \det(J_\phi(x)) - \varepsilon, 0 ) \right) dx
+\end{equation}
+where $\varepsilon > 0$ specifies a safety margin ensuring global bijectivity.

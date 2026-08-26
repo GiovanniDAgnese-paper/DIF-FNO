@@ -1,0 +1,9 @@
+README.md
+pyproject.toml
+setup.py
+dagnese_fno.egg-info/PKG-INFO
+dagnese_fno.egg-info/SOURCES.txt
+dagnese_fno.egg-info/dependency_links.txt
+dagnese_fno.egg-info/requires.txt
+dagnese_fno.egg-info/top_level.txt
+tests/test_jacobian.py
