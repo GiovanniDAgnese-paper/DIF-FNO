@@ -4,3 +4,5 @@ __pycache__/
 *.aux
 *.log
 *.out
+arxiv_submission.tar.gz
+arxiv_submission.zip
