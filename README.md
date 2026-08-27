@@ -1,51 +1,12 @@
-# DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators
+# D'Agnese DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/GiovanniDAgnese-paper/DIF-FNO/blob/main/benchmark.ipynb)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22117134.svg)](https://doi.org/10.5281/zenodo.22117134)
+[![PyPI version](https://badge.fury.io/py/dagnese-fno.svg)](https://badge.fury.io/py/dagnese-fno)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Official implementation of **DIF-FNO** featuring the **D'Agnese Topological Barrier Loss** for topology-preserving neural operators on non-convex and deformed geometries.
+Official implementation of **D'Agnese DIF-FNO**, introducing the **D'Agnese Topological Barrier Loss** ($\mathcal{L}_{\text{barrier}}$). This architecture guarantees global $C^1$-diffeomorphic invertibility and eliminates grid folding (**0.00% folding rate**) in Fourier Neural Operators on irregular, non-convex geometries (Star, L-Shape, Annulus).
 
----
+## Installation
 
-## Key Features
-
-* **Zero Grid Folding:** Enforces strict positive Jacobian determinant ($\det J > 0$) across complex spatial transformations.
-* **Sobolev Accuracy ($H^1$):** Preserves spatial gradients and physical derivatives ($\nabla u$) via exact metric transformations.
-* **Analytical 2D Jacobian Acceleration:** Eliminates LU-decomposition overhead using direct $ad - bc$ calculations, fully compatible with `torch.compile()`.
-
----
-
-## Visual Inspection: Mesh Topology
-
-![Grid Comparison](grid_comparison.png)
-
-*Comparison between severe grid overlap in Standard FNO vs. smooth diffeomorphic mapping in DIF-FNO.*
-
----
-
-## Benchmark Results
-
-Evaluation on $32 \times 64 \times 64$ grid resolution (131,072 cells) under severe mesh deformation:
-
-| Model Architecture | Folded Cells ($\det J \le 0$) | Grid Folding Rate (%) | Topological Stability |
-|---|---|---|---|
-| **Standard FNO** | 80 / 131,072 | 0.06% | **Failed** |
-| **DIF-FNO (Ours)** | **0 / 131,072** | **0.00%** | **PASSED (0.00%)** |
-
----
-
-## Quick Start
-
-```python
-import torch
-from dagnese_barrier import DAgneseBarrierLoss, get_compiled_dagnese_loss
-
-# Initialize loss module
-criterion = get_compiled_dagnese_loss(alpha=50.0, eps=1e-3)
-
-# Pass Jacobian batch J of shape (B, H, W, 2, 2)
-loss = criterion(J)
-loss.backward() @article{dagnese2026diffno,
-  title={DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators},
-  author={D'Agnese, Giovanni},
-  year={2026}
-}
+```bash
+pip install dagnese-fno

@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use D'Agnese DIF-FNO or the D'Agnese Barrier Loss, please cite it as below."
+authors:
+  - family-names: "D'Agnese"
+    given-names: "Giovanni"
+    email: "jovannidagnese2@gmail.com"
+title: "D'Agnese DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators with Topological Guarantees on Non-Convex Domains"
+version: 1.0.0
+doi: 10.5281/zenodo.22117134
+date-released: 2026-08-26
+url: "https://doi.org/10.5281/zenodo.22117134"
+repository-code: "https://github.com/GiovanniDagnese-paper/DIF-FNO"
