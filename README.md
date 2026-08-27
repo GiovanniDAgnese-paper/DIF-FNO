@@ -53,7 +53,7 @@ As $\det(J_\phi) \to 0^+$, the barrier potential satisfies $\mathcal{L}_{\text{b
 Clone the repository and set up the virtual environment:
 
 ```bash
-git clone [https://github.com/GiovanniDagnese-paper/DIF-FNO.git](https://github.com/GiovanniDagnese-paper/DIF-FNO.git)
+git clone [https://github.com/GiovanniDAgnese-paper/DIF-FNO.git](https://github.com/GiovanniDAgnese-paper/DIF-FNO.git)
 cd DIF-FNO
 
 python3 -m venv venv
