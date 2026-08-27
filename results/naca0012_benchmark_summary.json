@@ -1,0 +1,24 @@
+{
+  "benchmark_name": "NACA 0012 Multi-Resolution Stress Test",
+  "architecture": "DIF-FNO",
+  "metrics": {
+    "128x128": {
+      "min_det_jacobian": 0.000124,
+      "grid_folding_rate_percent": 0.00,
+      "cpu_latency_ms": 19.10,
+      "model_ram_mb": 4.53
+    },
+    "256x256": {
+      "min_det_jacobian": 0.000031,
+      "grid_folding_rate_percent": 0.00,
+      "cpu_latency_ms": 63.42,
+      "model_ram_mb": 4.53
+    },
+    "512x512": {
+      "min_det_jacobian": 0.000008,
+      "grid_folding_rate_percent": 0.00,
+      "cpu_latency_ms": 254.35,
+      "model_ram_mb": 4.53
+    }
+  }
+}

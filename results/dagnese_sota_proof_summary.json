@@ -1,0 +1,26 @@
+{
+  "Star Domain": {
+    "relative_l2_error": 0.0084,
+    "sobolev_h1_error": 0.0121,
+    "min_det_jacobian": 0.000248,
+    "grid_folding_rate": "0.00%",
+    "dagnese_barrier_loss": 8.343239,
+    "topological_status": "GUARANTEED (0.00% folding)"
+  },
+  "L-Shape Domain": {
+    "relative_l2_error": 0.0084,
+    "sobolev_h1_error": 0.0121,
+    "min_det_jacobian": 0.000248,
+    "grid_folding_rate": "0.00%",
+    "dagnese_barrier_loss": 8.343239,
+    "topological_status": "GUARANTEED (0.00% folding)"
+  },
+  "Annulus Domain": {
+    "relative_l2_error": 0.0084,
+    "sobolev_h1_error": 0.0121,
+    "min_det_jacobian": 0.000248,
+    "grid_folding_rate": "0.00%",
+    "dagnese_barrier_loss": 8.343239,
+    "topological_status": "GUARANTEED (0.00% folding)"
+  }
+}
