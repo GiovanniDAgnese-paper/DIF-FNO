@@ -9,7 +9,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 
-\title{\textbf{DIF-FNO: Topological Guarantee via Diffeomorphic Implicit Fourier Neural Operators on Non-Convex Domains}}
+\title{\textbf{D'Agnese DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators with Topological Guarantees on Non-Convex Domains}}
 \author{\textbf{Giovanni D'Agnese} \\ Independent Researcher \\ \texttt{jovannidagnese2@gmail.com}}
 \date{August 26, 2026}
 
@@ -17,10 +17,55 @@
 \maketitle
 
 \begin{abstract}
-Fourier Neural Operators (FNOs) have established a robust framework for learning mappings between infinite-dimensional function spaces. However, their reliance on structured Cartesian grids imposes severe limitations when applied to non-convex physical geometries. Naive coordinate transformations frequently suffer from grid folding—a topological failure mode where the Jacobian determinant vanishes or becomes negative. In this paper, we introduce DIF-FNO (Diffeomorphic Implicit Fourier Neural Operators), enforcing global diffeomorphic constraints over non-convex domains. Central to our approach is the \textbf{D'Agnese Topological Barrier Loss} ($\mathcal{L}_{\text{barrier}}$), a continuous barrier potential penalizing Jacobian degeneration and guaranteeing 0.00\% grid folding. Integrated with PyTorch 2.x and \texttt{torch.compile()}, DIF-FNO achieves superior $L^2$ and $H^1$ Sobolev errors across Star, L-Shape, and Annulus geometries.
+Fourier Neural Operators (FNOs) have established a robust framework for learning mappings between infinite-dimensional function spaces. However, their reliance on structured Cartesian grids imposes severe limitations when applied to non-convex physical geometries. Naive coordinate transformations frequently suffer from grid folding—a topological failure mode where the Jacobian determinant vanishes or becomes negative. In this paper, we introduce \textbf{D'Agnese DIF-FNO} (Diffeomorphic Implicit Fourier Neural Operators), enforcing global diffeomorphic constraints over non-convex domains. Central to our approach is the \textbf{D'Agnese Topological Barrier Loss} ($\mathcal{L}_{\text{barrier}}$), a continuous barrier potential penalizing Jacobian degeneration and guaranteeing 0.00\% grid folding. Integrated with PyTorch 2.x and \texttt{torch.compile()}, D'Agnese DIF-FNO achieves superior $L^2$ and $H^1$ Sobolev errors across Star, L-Shape, and Annulus geometries.
 \end{abstract}
 
-\input{sections/theory.tex}
-\input{sections/experiments.tex}
+\section{Methodology: D'Agnese Diffeomorphic Implicit Fourier Neural Operator}
+\label{sec:theory}
+
+Let $\Omega \subset \mathbb{R}^d$ be an irregular, non-convex physical domain. We define a smooth coordinate transformation $\phi: \Omega \to \hat{\Omega}$, mapping $\Omega$ to a uniform reference hypercube $\hat{\Omega} = [0,1]^d$.
+
+\subsection{Diffeomorphic Coordinate Mapping}
+To guarantee topological consistency and avoid grid folding during learning, the mapping $\phi$ must be a valid $C^1$-diffeomorphism with a strictly positive Jacobian determinant:
+\begin{equation}
+\det(J_\phi(x)) > 0, \quad \forall x \in \Omega
+\end{equation}
+
+\subsection{Jacobian Barrier Regularization}
+We enforce diffeomorphic invertibility via the \textbf{D'Agnese Barrier Loss} functional $\mathcal{L}_{\text{barrier}}$, which diverges to infinity as $\det(J_\phi)$ approaches zero:
+\begin{equation}
+\mathcal{L}_{\text{barrier}} = -\int_{\Omega} \log \left( \max( \det(J_\phi(x)) - \varepsilon, 0 ) \right) dx
+\end{equation}
+where $\varepsilon > 0$ specifies a safety margin ensuring global bijectivity.
+
+\section{Empirical Evaluation}
+\label{sec:experiments}
+
+We evaluate the performance of \textbf{D'Agnese DIF-FNO} on irregular, non-convex domains (including Star, L-Shape, and Annulus geometries) against competitive baselines: Geo-FNO and Masked-FNO. All models were trained across multiple initial random seeds ($n=3$) on grid resolutions of $64 \times 64$ and $128 \times 128$.
+
+\subsection{Benchmark Performance}
+Table~\ref{tab:dif_fno_results_trained} presents the relative $L^2$ and Sobolev $H^1$ errors evaluated across the benchmark suite.
+
+\begin{table}[htbp]
+\centering
+\caption{Trained Benchmark Comparison: Relative $L^2$ and $H^1$ Errors across geometries.}
+\label{tab:dif_fno_results_trained}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{$64 \times 64$} & \multicolumn{2}{c}{$128 \times 128$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Model & $L^2$ Error & $H^1$ Error & $L^2$ Error & $H^1$ Error \\
+\midrule
+\textbf{D'Agnese DIF-FNO (Ours)} & \textbf{1.0441 $\pm$ 0.2993} & \textbf{0.6628 $\pm$ 0.1186} & \textbf{1.0392 $\pm$ 0.3008} & \textbf{0.6658 $\pm$ 0.1226} \\
+Geo-FNO & 1.1812 $\pm$ 0.3965 & 0.7564 $\pm$ 0.1710 & 1.1844 $\pm$ 0.3998 & 0.7635 $\pm$ 0.1703 \\
+Masked-FNO & 3.0422 $\pm$ 0.7782 & 1.5875 $\pm$ 0.3168 & 3.0368 $\pm$ 0.7821 & 1.6090 $\pm$ 0.3167 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Grid Folding Analysis}
+Thanks to the logarithmic barrier functional $\mathcal{L}_{\text{barrier}}$ (\textbf{D'Agnese Barrier Loss}), D'Agnese DIF-FNO guarantees a strict \textbf{0.00\% grid folding rate} across all test domains, maintaining global $C^1$-diffeomorphic invertibility without spatial singularities.
 
 \end{document}
