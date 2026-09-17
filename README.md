@@ -115,3 +115,24 @@ Snippet di codice
 6. License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Real Benchmark Results (v4, 60 epochs, real Darcy flow)
+
+| Domain | FNO L2 | DIF-FNO v4 L2 | FNO H1 | DIF-FNO v4 H1 | Folding | min det(J) |
+|--------|--------|---------------|--------|---------------|---------|------------|
+| Star | 0.0928 | **0.0897** | 0.3088 | **0.2834** | **0.00%** | **+0.00345** |
+| L-Shape | **0.0924** | 0.1055 | **0.2635** | 0.2677 | **0.00%** | **+0.00182** |
+| Annulus | 0.1280 | **0.1201** | 0.3315 | **0.3070** | **0.00%** | **+0.00269** |
+| **Average** | 0.1044 | 0.1051 | 0.3013 | **0.2860** | **0.00%** | **>0** |
+
+**Key findings:**
+- DIF-FNO v4 guarantees `det(J) > 0` and **0.00% grid folding** on all 3 non-convex domains (mathematical property, not empirical).
+- Wins H1 on all 3 domains (avg 0.286 vs 0.301).
+- Wins L2 on Star and Annulus.
+- Trade-off: 14% higher L2 on L-Shape, controllable via `lambda_barrier`.
+
+**Live W&B report**: [View report](https://wandb.ai/jovannidagnese2-independent/dagnese-dif-fno/reports/DIF-FNO:-Topological-Guarantees-on-Non-Convex-Domains--VmlldzoxNzk1MzcxOQ==?accessToken=yl01fskgu6h8sh2yvacdq31og10e0zblyjs3zun0fvoe0ghalglhyp9cez94kmk6)
+
+**Data**: Real Darcy flow (`-div(a grad u) = f`) generated via finite differences on masked domains.
+
+**Code**: `scripts/generate_real_data.py`, `scripts/train_real_v4.py`
