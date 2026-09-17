@@ -1,0 +1,9 @@
+{
+  "domain": "lshape",
+  "model_type": "dif",
+  "seed": 0,
+  "val_rel_l2": 0.12933632731437683,
+  "val_rel_h1": 0.3100467026233673,
+  "val_min_detJ": 0.0010972566669806838,
+  "val_fold_pct": 0.0
+}

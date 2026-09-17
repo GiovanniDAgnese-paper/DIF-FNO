@@ -1,0 +1,9 @@
+{
+  "domain": "annulus",
+  "model_type": "dif",
+  "seed": 0,
+  "val_rel_l2": 0.12007247284054756,
+  "val_rel_h1": 0.3069549947977066,
+  "val_min_detJ": 0.0026871674926951528,
+  "val_fold_pct": 0.0
+}

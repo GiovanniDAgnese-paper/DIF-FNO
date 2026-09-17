@@ -1,0 +1,7 @@
+{
+  "domain": "annulus",
+  "model_type": "fno",
+  "seed": 0,
+  "val_rel_l2": 0.12803462892770767,
+  "val_rel_h1": 0.33153219521045685
+}
