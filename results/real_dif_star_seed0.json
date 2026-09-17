@@ -1,9 +1,0 @@
-{
-  "domain": "star",
-  "model_type": "dif",
-  "seed": 0,
-  "val_rel_l2": 0.10542779415845871,
-  "val_rel_h1": 0.347268208861351,
-  "val_min_detJ": -0.0011800643987953663,
-  "val_fold_pct": 100.0
-}
