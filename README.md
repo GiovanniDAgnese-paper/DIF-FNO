@@ -32,7 +32,7 @@ where $\mathcal{L}_{\text{barrier}}(\det J) = \tau \cdot \mathrm{softplus}(-\det
 | **Average** | 0.1044 | 0.1051 | 0.3013 | **0.2860** | **0.00%** | **>0** |
 
 **Key findings:**
-- DIF-FNO v4 guarantees `det(J) > 0` and **0.00% grid folding** on all 3 non-convex domains (mathematical property, not empirical).
+- DIF-FNO v4 achieves `det(J) > 0` and **0.00% grid folding** on all 3 non-convex domains (verified empirically across all final runs; the softplus barrier is differentiable everywhere and does not saturate).
 - Wins H1 on all 3 domains (avg 0.286 vs 0.301).
 - Wins L2 on Star and Annulus.
 - Trade-off: 14% higher L2 on L-Shape, controllable via `lambda_barrier`.
