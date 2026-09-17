@@ -1,6 +1,6 @@
 # DIF-FNO: Diffeomorphic Fourier Neural Operator
 
-[![DOI](https://zenodo.org/badge/DOI/INSERISCI_QUI_IL_NUOVO_DOI.svg)](https://doi.org/10.5281/zenodo.22814077)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22814077.svg)](https://doi.org/10.5281/zenodo.22814077)
 [![Topological Integrity](https://img.shields.io/badge/Grid_Folding-0.00%25_Guaranteed-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](#)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](#)
@@ -18,7 +18,7 @@ DIF-FNO solves this by enforcing strict diffeomorphic mappings ($\phi \in C^1, \
 
 $$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{MSE}} + \alpha \mathcal{L}_{H^1} + \lambda_{\text{barrier}} \mathcal{L}_{\text{barrier}}(\det(J_\phi))$$
 
-As $\det(J_\phi) \to 0^+$, the barrier potential satisfies $\mathcal{L}_{\text{barrier}} \to +\infty$, making grid collapse mathematically and numerically impossible during optimization.
+where $\mathcal{L}_{\text{barrier}}(\det J) = \tau \cdot \mathrm{softplus}(-\det J / \tau)$ is a smooth, everywhere-differentiable penalty that grows linearly as $\det J \to -\infty$, driving the mapping towards $\det(J_\phi) > 0$ throughout training. Zero-initialization of the final layer ensures $\phi = \mathrm{Id}$, $\det(J_\phi) = 1$ at $t=0$.
 
 ---
 

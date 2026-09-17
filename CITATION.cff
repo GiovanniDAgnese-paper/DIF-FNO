@@ -5,8 +5,8 @@ authors:
     given-names: "Giovanni"
     email: "jovannidagnese2@gmail.com"
 title: "D'Agnese DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators with Topological Guarantees on Non-Convex Domains"
-version: 1.0.0
-doi: 10.5281/zenodo.22117134
-date-released: 2026-08-26
-url: "https://doi.org/10.5281/zenodo.22117134"
+version: 8.0.0
+doi: 10.5281/zenodo.22814077
+date-released: 2026-09-17
+url: "https://doi.org/10.5281/zenodo.22814077"
 repository-code: "https://github.com/GiovanniDagnese-paper/DIF-FNO"
