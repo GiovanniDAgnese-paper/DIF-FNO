@@ -6,3 +6,7 @@ __pycache__/
 *.out
 arxiv_submission.tar.gz
 arxiv_submission.zip
+wandb/
+*.synced
+.pytest_cache/
+__pycache__/
