@@ -9,7 +9,7 @@ below is exercised by the test suite (`tests/`) under the same name.
 ## 0. Setting
 
 Let $\Omega_{\mathrm{ref}} = [-1,1]^2$ be the reference square, discretised on a
-structured grid $\xi_{ij}$ with $`\texttt{'ij'} `$ ordering, so that tensor axis 0
+structured grid $\xi_{ij}$ with NumPy's ``'ij'`` ordering, so that tensor axis 0
 carries spatial component 0 and axis 1 component 1.  DIF-FNO learns
 
 $$
@@ -159,8 +159,7 @@ divided by the grid spacing returns $h^2 \det J_\phi$ on a uniform grid, so:
 
   $$
   \tau\,\mathrm{softplus}\!\left(-\frac{h^2 d}{\tau}\right)
-  = h^2 \underbrace{\left[\frac{\tau}{h^2}\,\mathrm{softplus}\!\left(-\frac{d}{\tau/h^2}\right)\right]}_{\text{barrier with temperature } \tau/h^2}
-  \cdot \frac{1}{1}
+  = h^2\;\underbrace{\left[\frac{\tau}{h^2}\,\mathrm{softplus}\!\left(-\frac{d}{\tau/h^{2}}\right)\right]}_{\text{barrier with temperature } \tau/h^{2}}
 $$
 
   so the *effective* temperature is $\tau_{\text{eff}} = \tau/h^{2} \approx 4.96$
