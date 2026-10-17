@@ -1,43 +1,25 @@
-"""D'Agnese Topological Barrier Loss.
+"""Backwards-compatible shim -- use :mod:`dagnese_fno.losses.barrier` instead.
 
-Implementation of the smooth softplus barrier used in DIF-FNO v4.
-Enforces strict diffeomorphic invertibility by penalizing negative
-Jacobian determinants det(J_phi) throughout training.
-
-The barrier is everywhere differentiable and grows linearly as det(J) -> -inf,
-avoiding the gradient saturation of the classical -log(det(J)) barrier while
-still driving the mapping towards det(J) > 0.
+The canonical implementation now lives in
+:mod:`dagnese_fno.losses.barrier` and is re-exported here so that
+``from dagnese_fno.barrier_loss import DAgneseBarrierLoss`` (as used in
+DIF-FNO v4 and in the paper's companion code) keeps working.
 """
-import torch
-import torch.nn as nn
 
+from __future__ import annotations
 
-class DAgneseBarrierLoss(nn.Module):
-    """D'Agnese Topological Barrier Loss (v4, softplus formulation).
+import warnings
 
-    L_barrier(det J) = tau * softplus(-det J / tau)
+from .losses.barrier import DAgneseBarrierLoss
 
-    Properties:
-    - Smooth and differentiable everywhere (no clamp, no saturation).
-    - ~ 0 when det J > 0 (topologically valid region).
-    - Grows linearly (slope ~ 1) as det J -> -inf, providing a constant
-      gradient that pushes the network back towards det J > 0.
+warnings.warn(
+    "dagnese_fno.barrier_loss is deprecated; import "
+    "dagnese_fno.losses.barrier (or dagnese_fno.DAgneseBarrierLoss) instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
-    Combined with zero-initialization of the final layer of the
-    diffeomorphic map (phi = Identity at t=0, det(J) = 1), this yields
-    empirically verified det(J) > 0 and 0.00% grid folding on non-convex
-    domains (Star, L-Shape, Annulus) with real Darcy flow data.
-    """
-
-    def __init__(self, tau: float = 0.005):
-        super().__init__()
-        if tau <= 0:
-            raise ValueError("tau must be positive")
-        self.tau = tau
-
-    def forward(self, det_J: torch.Tensor) -> torch.Tensor:
-        return (self.tau * torch.nn.functional.softplus(-det_J / self.tau)).mean()
-
-
-# Backwards-compatible alias
+# Historical alias kept for the v4 scripts.
 DAgneseBarrierLossV4 = DAgneseBarrierLoss
+
+__all__ = ["DAgneseBarrierLoss", "DAgneseBarrierLossV4"]

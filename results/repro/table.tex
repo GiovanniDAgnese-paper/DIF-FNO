@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\caption{DIF-FNO benchmark reproduced with this repository (Darcy flow, 60 epochs, 80/20 split).}
+\label{tab:benchmark}
+\begin{tabular}{l|cc|cc|cc|cc|cc|}
+\hline
+\textbf{Domain} & \multicolumn{2}{c|}{\textbf{dif-barrier-large}} & \multicolumn{2}{c|}{\textbf{dif-barrier}} & \multicolumn{2}{c|}{\textbf{dif-certified}} & \multicolumn{2}{c|}{\textbf{dif-nobar}} & \multicolumn{2}{c|}{\textbf{fno}} \\
+ & $L^2$ & $H^1$ & $L^2$ & $H^1$ & $L^2$ & $H^1$ & $L^2$ & $H^1$ & $L^2$ & $H^1$ \\
+\hline
+star & 0.1135 & 0.2797 & 0.1132 & 0.2806 & 0.1018 & 0.2603 & 0.1019 & 0.2522 & 0.1061 & 0.2620 \\
+lshape & 0.1007 & 0.2590 & 0.1012 & 0.2603 & 0.1038 & 0.2499 & 0.0973 & 0.2500 & 0.1070 & 0.2601 \\
+annulus & 0.1459 & 0.2957 & 0.1460 & 0.2966 & 0.1531 & 0.3125 & 0.1336 & 0.2751 & 0.1461 & 0.2730 \\
+naca0012 & -- & -- & 0.1084 & 0.2572 & 0.1058 & 0.2476 & -- & -- & 0.1128 & 0.2664 \\
+\textbf{Average} & 0.1200 & 0.2781 & 0.1172 & 0.2737 & 0.1161 & 0.2676 & 0.1110 & 0.2591 & 0.1180 & 0.2654 \\
+\hline
+\end{tabular}
+\end{table}

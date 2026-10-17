@@ -1,3 +1,103 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "dagnese-fno"
+version = "1.1.0"
+description = "D'Agnese DIF-FNO: diffeomorphic implicit Fourier neural operators with topological guarantees on non-convex domains"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Giovanni D'Agnese", email = "jovannidagnese2@gmail.com" },
+]
+maintainers = [
+    { name = "Giovanni D'Agnese", email = "jovannidagnese2@gmail.com" },
+]
+keywords = [
+    "neural operator",
+    "fourier neural operator",
+    "scientific machine learning",
+    "diffeomorphism",
+    "mesh generation",
+    "topology",
+    "darcy flow",
+    "pytorch",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "numpy>=1.22",
+    "scipy>=1.8",
+    "torch>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+    "matplotlib>=3.5",
+    "sympy>=1.10",
+]
+wandb = ["wandb>=0.15"]
+figures = ["matplotlib>=3.5"]
+all = ["dagnese-fno[dev,wandb,figures]"]
+
+[project.urls]
+Homepage = "https://github.com/GiovanniDAgnese-paper/DIF-FNO"
+Repository = "https://github.com/GiovanniDAgnese-paper/DIF-FNO"
+Issues = "https://github.com/GiovanniDAgnese-paper/DIF-FNO/issues"
+"Published paper (DOI)" = "https://doi.org/10.5281/zenodo.22814077"
+
+[project.scripts]
+dif-fno-train = "dagnese_fno.cli.train:main"
+dif-fno-generate-data = "dagnese_fno.cli.generate_data:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dagnese_fno = ["py.typed"]
+
+# --------------------------------------------------------------------------- #
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q --strict-markers"
+filterwarnings = [
+    "ignore::DeprecationWarning:dagnese_fno.barrier_loss",
+    "ignore::DeprecationWarning:dagnese_fno.dagnese_mesh_generator",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests", "scripts"]
+exclude = [".git", "build", "dist", ".venv", "wandb"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = ["B905", "SIM108", "E501", "B023"]
+per-file-ignores = { "tests/*" = ["B011"], "scripts/*" = ["E402"] }
+
+[tool.ruff.lint.isort]
+known-first-party = ["dagnese_fno"]
+
+[tool.coverage.run]
+source = ["src/dagnese_fno"]
+omit = ["*/barrier_loss.py", "*/dagnese_mesh_generator.py"]

@@ -1,14 +1,36 @@
-venv/
-*.pt
+# Python
 __pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.venv/
+venv/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Data & experiment outputs (keep results/: they are the provenance of the tables)
+data/
+real_data/
+*.pt
+wandb/
+*.synced
+
+# LaTeX / misc
 *.aux
 *.log
 *.out
+*.bbl
+*.blg
 arxiv_submission.tar.gz
 arxiv_submission.zip
-wandb/
-*.synced
-.pytest_cache/
-__pycache__/
-*.egg-info/
-wandb/
+
+# OS
+.DS_Store
