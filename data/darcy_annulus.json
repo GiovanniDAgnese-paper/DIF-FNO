@@ -1,0 +1,57 @@
+{
+  "coefficient": "a = exp(contrast * a_hat), a_hat = truncated sine series, Gaussian coefficients with 1/(k^2+l^2)^2 variance, max|a_hat| = 1",
+  "contrast": 2.0,
+  "description": "doubly connected: an inner hole the chart has to flow around",
+  "discretisation": "5-point finite volume, arithmetic face averaging, h = 2/(n-1)",
+  "domain": "annulus",
+  "file": "darcy_annulus.pt",
+  "fill_fraction": 0.458984375,
+  "forcing": 1.0,
+  "generator": "dagnese_fno.data.generate_dataset",
+  "mask_summary": {
+    "bbox_cells": [
+      4,
+      59,
+      4,
+      59
+    ],
+    "fill_fraction": 0.458984375,
+    "n_active": 1880,
+    "n_cells": 4096,
+    "n_components": 1,
+    "n_holes": 1,
+    "shape": [
+      64,
+      64
+    ]
+  },
+  "n": 64,
+  "n_modes": 6,
+  "n_samples": 100,
+  "pde": "-div(a grad u) = f on the active cells, u = 0 on the inactive layer",
+  "seed": 2,
+  "sha256": "4284e0c59e914eb01cdb917499de7c9ec91dbce64345bd99c934190d207a8c27",
+  "shapes": {
+    "coeffs": [
+      100,
+      64,
+      64
+    ],
+    "coords": [
+      64,
+      64,
+      2
+    ],
+    "mask": [
+      64,
+      64
+    ],
+    "targets": [
+      100,
+      64,
+      64
+    ]
+  },
+  "simply_connected": false,
+  "spacing": 0.031746031746031744
+}
