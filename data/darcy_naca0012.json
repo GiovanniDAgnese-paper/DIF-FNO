@@ -1,0 +1,57 @@
+{
+  "coefficient": "a = exp(contrast * a_hat), a_hat = truncated sine series, Gaussian coefficients with 1/(k^2+l^2)^2 variance, max|a_hat| = 1",
+  "contrast": 2.0,
+  "description": "square minus a symmetric NACA 0012 airfoil (thin obstacle + cusp)",
+  "discretisation": "5-point finite volume, arithmetic face averaging, h = 2/(n-1)",
+  "domain": "naca0012",
+  "file": "darcy_naca0012.pt",
+  "fill_fraction": 0.921875,
+  "forcing": 1.0,
+  "generator": "dagnese_fno.data.generate_dataset",
+  "mask_summary": {
+    "bbox_cells": [
+      1,
+      62,
+      1,
+      62
+    ],
+    "fill_fraction": 0.921875,
+    "n_active": 3776,
+    "n_cells": 4096,
+    "n_components": 1,
+    "n_holes": 1,
+    "shape": [
+      64,
+      64
+    ]
+  },
+  "n": 64,
+  "n_modes": 6,
+  "n_samples": 100,
+  "pde": "-div(a grad u) = f on the active cells, u = 0 on the inactive layer",
+  "seed": 3,
+  "sha256": "1a65595329c3745c750c1044e9d2f1dc9e5fb85224798cc2511ddfdd6db75d39",
+  "shapes": {
+    "coeffs": [
+      100,
+      64,
+      64
+    ],
+    "coords": [
+      64,
+      64,
+      2
+    ],
+    "mask": [
+      64,
+      64
+    ],
+    "targets": [
+      100,
+      64,
+      64
+    ]
+  },
+  "simply_connected": false,
+  "spacing": 0.031746031746031744
+}
