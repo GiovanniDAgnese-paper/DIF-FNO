@@ -1,12 +1,27 @@
 cff-version: 1.2.0
-message: "If you use D'Agnese DIF-FNO or the D'Agnese Barrier Loss, please cite it as below."
+message: "If you use D'Agnese DIF-FNO or the D'Agnese Topological Barrier Loss, please cite it as below."
+title: "D'Agnese DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators with Topological Guarantees on Non-Convex Domains"
+abstract: >-
+  DIF-FNO is a Fourier Neural Operator preceded by a learnable, input-conditioned
+  diffeomorphic coordinate map. Grid folding (non-positive Jacobian determinant)
+  is discouraged by the D'Agnese softplus barrier loss and -- in the
+  Lipschitz-constrained variant -- provably excluded by a spectral-norm
+  certificate that guarantees det(J_phi) >= (1 - kappa*L)^2 > 0.
 authors:
   - family-names: "D'Agnese"
     given-names: "Giovanni"
     email: "jovannidagnese2@gmail.com"
-title: "D'Agnese DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators with Topological Guarantees on Non-Convex Domains"
-version: 8.0.0
+version: 1.1.0
 doi: 10.5281/zenodo.22814077
-date-released: 2026-09-17
+date-released: "2026-10-17"
+license: MIT
+repository-code: "https://github.com/GiovanniDAgnese-paper/DIF-FNO"
 url: "https://doi.org/10.5281/zenodo.22814077"
-repository-code: "https://github.com/GiovanniDagnese-paper/DIF-FNO"
+keywords:
+  - neural operator
+  - fourier neural operator
+  - diffeomorphism
+  - topology preservation
+  - scientific machine learning
+  - darcy flow
+  - non-convex domains
