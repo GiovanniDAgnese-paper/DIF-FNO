@@ -17,7 +17,7 @@ coverage.xml
 htmlcov/
 
 # Data & experiment outputs (keep results/: they are the provenance of the tables)
-data/
+/data/
 real_data/
 *.pt
 wandb/

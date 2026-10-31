@@ -28,6 +28,7 @@ from __future__ import annotations
 
 from . import data, geometry, losses, metrics, models, training, utils
 from .geometry import (
+    DagneseTriangularChart,
     certified_det_lower_bound,
     det_jacobian_stats,
     displacement_stats,
@@ -35,9 +36,13 @@ from .geometry import (
     jacobian_components,
     jacobian_det,
     jacobian_det_autograd,
+    pullback,
+    pushforward,
+    sample_field,
 )
 from .losses import (
     DAgneseBarrierLoss,
+    DagneseEquidistributionLoss,
     DiffeomorphicOperatorLoss,
     HingeFoldingPenalty,
     LogBarrierLoss,
@@ -45,7 +50,7 @@ from .losses import (
     get_folding_penalty,
 )
 from .metrics import relative_H1, relative_h1, relative_l2
-from .models import DiffeomorphicMap, DIFFNO2d, FNO2d, build_model
+from .models import DagneseChartOperator, DiffeomorphicMap, DIFFNO2d, FNO2d, build_model
 from .training import TrainConfig, train_one
 from .utils import describe_environment, set_seed
 
@@ -57,14 +62,16 @@ __all__ = [
     # sub-packages
     "data", "geometry", "losses", "metrics", "models", "training", "utils",
     # models
-    "FNO2d", "DIFFNO2d", "DiffeomorphicMap", "build_model",
+    "FNO2d", "DIFFNO2d", "DagneseChartOperator", "DiffeomorphicMap", "build_model",
     # losses
-    "DAgneseBarrierLoss", "LogBarrierLoss", "HingeFoldingPenalty",
+    "DAgneseBarrierLoss", "DagneseEquidistributionLoss",
+    "LogBarrierLoss", "HingeFoldingPenalty",
     "DiffeomorphicOperatorLoss", "dagnese_barrier", "get_folding_penalty",
     # geometry
     "jacobian_det", "jacobian_components", "jacobian_det_autograd",
     "folding_percentage", "det_jacobian_stats", "displacement_stats",
     "certified_det_lower_bound",
+    "DagneseTriangularChart", "sample_field", "pullback", "pushforward",
     # metrics
     "relative_l2", "relative_h1", "relative_H1",
     # training

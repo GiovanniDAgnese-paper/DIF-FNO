@@ -1,0 +1,697 @@
+{
+  "summary": {
+    "fno": {
+      "slit": {
+        "rel_l2": [
+          0.22888989249865213,
+          0.015416772814995313,
+          3
+        ],
+        "rel_h1": [
+          0.4459889779488246,
+          0.0065880084877280734,
+          3
+        ],
+        "rel_H1": [
+          0.43619629740715027,
+          0.007178204740047203,
+          3
+        ],
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null,
+        "certified_det_lower_bound": null,
+        "lipschitz_bound": null,
+        "n_runs": 3,
+        "n_params": 334737,
+        "wall_time_s": 19.25422501564026
+      },
+      "double_hole": {
+        "rel_l2": [
+          0.19862484435240427,
+          0.0037272338022349646,
+          3
+        ],
+        "rel_h1": [
+          0.4250847597916921,
+          0.008329014254636046,
+          3
+        ],
+        "rel_H1": [
+          0.4194007068872452,
+          0.008367016945258675,
+          3
+        ],
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null,
+        "certified_det_lower_bound": null,
+        "lipschitz_bound": null,
+        "n_runs": 3,
+        "n_params": 334737,
+        "wall_time_s": 16.990341583887737
+      },
+      "AVG": {
+        "rel_l2": 0.2137573684255282,
+        "rel_h1": 0.43553686887025833,
+        "rel_H1": 0.4277985021471977,
+        "fold_pct": null,
+        "displacement_mean": null,
+        "certified_det_lower_bound": null,
+        "min_detJ": null,
+        "wall_time_s": 18.122283299764
+      }
+    },
+    "chart-eq": {
+      "slit": {
+        "rel_l2": [
+          0.1974799856543541,
+          0.010088458684998847,
+          3
+        ],
+        "rel_h1": [
+          0.3833812326192856,
+          0.01309653656232482,
+          3
+        ],
+        "rel_H1": [
+          0.375004842877388,
+          0.013187523917642835,
+          3
+        ],
+        "min_detJ": [
+          0.046441743771235146,
+          0.005931694925545717,
+          3
+        ],
+        "fold_pct": [
+          0.0,
+          0.0,
+          3
+        ],
+        "displacement_mean": [
+          0.11763540903727214,
+          0.004764875659884583,
+          3
+        ],
+        "certified_det_lower_bound": [
+          0.021678514778614044,
+          0.0017618454071492186,
+          3
+        ],
+        "lipschitz_bound": null,
+        "n_runs": 3,
+        "n_params": 336339,
+        "wall_time_s": 50.90930024782816
+      },
+      "double_hole": {
+        "rel_l2": [
+          0.16492419689893723,
+          0.00776849853809696,
+          3
+        ],
+        "rel_h1": [
+          0.3570561707019806,
+          0.016366611780468367,
+          3
+        ],
+        "rel_H1": [
+          0.3522544999917348,
+          0.016303569210514138,
+          3
+        ],
+        "min_detJ": [
+          0.04280238846937815,
+          0.012608801805259624,
+          3
+        ],
+        "fold_pct": [
+          0.0,
+          0.0,
+          3
+        ],
+        "displacement_mean": [
+          0.13209895292917886,
+          0.004169677990954636,
+          3
+        ],
+        "certified_det_lower_bound": [
+          0.02193368598818779,
+          0.002033545206453729,
+          3
+        ],
+        "lipschitz_bound": null,
+        "n_runs": 3,
+        "n_params": 336339,
+        "wall_time_s": 50.1727446715037
+      },
+      "AVG": {
+        "rel_l2": 0.18120209127664566,
+        "rel_h1": 0.3702187016606331,
+        "rel_H1": 0.3636296714345614,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.1248671809832255,
+        "certified_det_lower_bound": 0.021806100383400917,
+        "min_detJ": 0.04280238846937815,
+        "wall_time_s": 50.54102245966593
+      }
+    },
+    "chart-fixed": {
+      "slit": {
+        "rel_l2": [
+          0.20951827118794122,
+          0.013324304308933634,
+          3
+        ],
+        "rel_h1": [
+          0.418180579940478,
+          0.009278540778154269,
+          3
+        ],
+        "rel_H1": [
+          0.408841997385025,
+          0.009349523734571522,
+          3
+        ],
+        "min_detJ": [
+          0.39319928487141925,
+          0.04795627787108487,
+          3
+        ],
+        "fold_pct": [
+          0.0,
+          0.0,
+          3
+        ],
+        "displacement_mean": [
+          0.07296274478236835,
+          0.015396654573529317,
+          3
+        ],
+        "certified_det_lower_bound": [
+          0.3595784505208333,
+          0.04703923728059269,
+          3
+        ],
+        "lipschitz_bound": null,
+        "n_runs": 3,
+        "n_params": 336339,
+        "wall_time_s": 47.32012645403544
+      },
+      "double_hole": {
+        "rel_l2": [
+          0.1800773392120997,
+          0.0051935787195925695,
+          3
+        ],
+        "rel_h1": [
+          0.3935762792825699,
+          0.01624151840139966,
+          3
+        ],
+        "rel_H1": [
+          0.3882560630639394,
+          0.016172780408689618,
+          3
+        ],
+        "min_detJ": [
+          0.4359390238920848,
+          0.09817620364979475,
+          3
+        ],
+        "fold_pct": [
+          0.0,
+          0.0,
+          3
+        ],
+        "displacement_mean": [
+          0.05498484646280607,
+          0.01378119480857846,
+          3
+        ],
+        "certified_det_lower_bound": [
+          0.4026128947734833,
+          0.09560882359497845,
+          3
+        ],
+        "lipschitz_bound": null,
+        "n_runs": 3,
+        "n_params": 336339,
+        "wall_time_s": 45.84863169987997
+      },
+      "AVG": {
+        "rel_l2": 0.19479780520002046,
+        "rel_h1": 0.405878429611524,
+        "rel_H1": 0.3985490302244822,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.0639737956225872,
+        "certified_det_lower_bound": 0.38109567264715827,
+        "min_detJ": 0.39319928487141925,
+        "wall_time_s": 46.5843790769577
+      }
+    }
+  },
+  "paired_vs_fno": {
+    "chart-eq": {
+      "double_hole": {
+        "rel_l2": [
+          -0.03370064745346705,
+          0.005170986563098177,
+          3
+        ],
+        "rel_h1": [
+          -0.0680285890897115,
+          0.008256231803042585,
+          3
+        ]
+      },
+      "slit": {
+        "rel_l2": [
+          -0.03140990684429804,
+          0.017462690466472846,
+          3
+        ],
+        "rel_h1": [
+          -0.06260774532953899,
+          0.014126138388293812,
+          3
+        ]
+      }
+    },
+    "chart-fixed": {
+      "double_hole": {
+        "rel_l2": [
+          -0.018547505140304565,
+          0.0038162523717288864,
+          3
+        ],
+        "rel_h1": [
+          -0.031508480509122215,
+          0.008145753227529057,
+          3
+        ]
+      },
+      "slit": {
+        "rel_l2": [
+          -0.019371621310710907,
+          0.019123993281810667,
+          3
+        ],
+        "rel_h1": [
+          -0.027808398008346558,
+          0.013485781856814793,
+          3
+        ]
+      }
+    }
+  },
+  "variant_descriptions": {
+    "fno": "Standard FNO baseline (physical grid, identical backbone)",
+    "dif-barrier": "DIF-FNO + D'Agnese softplus barrier (v4 configuration)",
+    "dif-certified": "DIF-FNO with Lipschitz-capped residual: det J >= (1-L)^2 by construction",
+    "dif-nobar": "Ablation: unconstrained diffeomorphism at large deformation scale",
+    "chart-fixed": "D'Agnese Chart Operator: one learned certified chart (no equidistribution term)",
+    "chart-eq": "D'Agnese Chart Operator + D'Agnese equidistribution loss",
+    "chart-cond": "D'Agnese Chart Operator with a per-sample chart (mesh model) + equidistribution",
+    "chart-deep": "D'Agnese Chart Operator with three composed triangular charts",
+    "dif-barrier-large": "Barrier at large deformation scale (what the barrier buys you)"
+  },
+  "runs": [
+    {
+      "run_name": "fno_fno_slit_seed0",
+      "domain": "slit",
+      "variant": "fno",
+      "seed": 0,
+      "final": {
+        "rel_l2": 0.2095341682434082,
+        "rel_h1": 0.43815651535987854,
+        "rel_H1": 0.4278474897146225,
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null
+      },
+      "wall_time_s": 19.51889681816101,
+      "n_params": 334737
+    },
+    {
+      "run_name": "fno_fno_slit_seed1",
+      "domain": "slit",
+      "variant": "fno",
+      "seed": 1,
+      "final": {
+        "rel_l2": 0.2298768237233162,
+        "rel_h1": 0.4455357491970062,
+        "rel_H1": 0.4353694021701813,
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null
+      },
+      "wall_time_s": 17.529654026031494,
+      "n_params": 334737
+    },
+    {
+      "run_name": "fno_fno_slit_seed2",
+      "domain": "slit",
+      "variant": "fno",
+      "seed": 2,
+      "final": {
+        "rel_l2": 0.24725868552923203,
+        "rel_h1": 0.45427466928958893,
+        "rel_H1": 0.44537200033664703,
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null
+      },
+      "wall_time_s": 20.71412420272827,
+      "n_params": 334737
+    },
+    {
+      "run_name": "chart-eq_chart_slit_seed0",
+      "domain": "slit",
+      "variant": "chart-eq",
+      "seed": 0,
+      "final": {
+        "rel_l2": 0.20260132104158401,
+        "rel_h1": 0.39198414981365204,
+        "rel_H1": 0.383268341422081,
+        "min_detJ": 0.04217396676540375,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.11821309477090836,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.024170009419322014,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 2.384185791015625e-07,
+        "chart_det_floor": 1e-06,
+        "eq_residual_pct": 140.55622100830078
+      },
+      "wall_time_s": 57.542741775512695,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-eq_chart_slit_seed1",
+      "domain": "slit",
+      "variant": "chart-eq",
+      "seed": 1,
+      "final": {
+        "rel_l2": 0.18338699638843536,
+        "rel_h1": 0.3648751527070999,
+        "rel_H1": 0.3563937246799469,
+        "min_detJ": 0.04232126846909523,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.12316083908081055,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.020454896613955498,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 1.1920928955078125e-06,
+        "chart_det_floor": 1e-06,
+        "eq_residual_pct": 142.16545867919922
+      },
+      "wall_time_s": 48.31941223144531,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-eq_chart_slit_seed2",
+      "domain": "slit",
+      "variant": "chart-eq",
+      "seed": 2,
+      "final": {
+        "rel_l2": 0.2064516395330429,
+        "rel_h1": 0.3932843953371048,
+        "rel_H1": 0.3853524625301361,
+        "min_detJ": 0.05482999607920647,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.1115322932600975,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.02041063830256462,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 2.5331974029541016e-07,
+        "chart_det_floor": 1e-06,
+        "eq_residual_pct": 140.89935302734375
+      },
+      "wall_time_s": 46.86574673652649,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-fixed_chart_slit_seed0",
+      "domain": "slit",
+      "variant": "chart-fixed",
+      "seed": 0,
+      "final": {
+        "rel_l2": 0.21611343324184418,
+        "rel_h1": 0.42932718992233276,
+        "rel_H1": 0.41954168677330017,
+        "min_detJ": 0.45912301540374756,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.05735165253281593,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.42310917377471924,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 1.7881393432617188e-07,
+        "chart_det_floor": 1e-06
+      },
+      "wall_time_s": 45.785452127456665,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-fixed_chart_slit_seed1",
+      "domain": "slit",
+      "variant": "chart-fixed",
+      "seed": 1,
+      "final": {
+        "rel_l2": 0.1909339800477028,
+        "rel_h1": 0.40661129355430603,
+        "rel_H1": 0.39676475524902344,
+        "min_detJ": 0.34644418954849243,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.06762272864580154,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.31072741746902466,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 2.4586915969848633e-07,
+        "chart_det_floor": 1e-06
+      },
+      "wall_time_s": 49.02512979507446,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-fixed_chart_slit_seed2",
+      "domain": "slit",
+      "variant": "chart-fixed",
+      "seed": 2,
+      "final": {
+        "rel_l2": 0.22150740027427673,
+        "rel_h1": 0.4186032563447952,
+        "rel_H1": 0.41021955013275146,
+        "min_detJ": 0.3740306496620178,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.09391385316848755,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.3448987603187561,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 2.4586915969848633e-07,
+        "chart_det_floor": 1e-06
+      },
+      "wall_time_s": 47.149797439575195,
+      "n_params": 336339
+    },
+    {
+      "run_name": "fno_fno_double_hole_seed0",
+      "domain": "double_hole",
+      "variant": "fno",
+      "seed": 0,
+      "final": {
+        "rel_l2": 0.20086252689361572,
+        "rel_h1": 0.4367097020149231,
+        "rel_H1": 0.4310995638370514,
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null
+      },
+      "wall_time_s": 17.17786979675293,
+      "n_params": 334737
+    },
+    {
+      "run_name": "fno_fno_double_hole_seed1",
+      "domain": "double_hole",
+      "variant": "fno",
+      "seed": 1,
+      "final": {
+        "rel_l2": 0.19337284564971924,
+        "rel_h1": 0.42091675102710724,
+        "rel_H1": 0.41508848965168,
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null
+      },
+      "wall_time_s": 16.684781312942505,
+      "n_params": 334737
+    },
+    {
+      "run_name": "fno_fno_double_hole_seed2",
+      "domain": "double_hole",
+      "variant": "fno",
+      "seed": 2,
+      "final": {
+        "rel_l2": 0.20163916051387787,
+        "rel_h1": 0.41762782633304596,
+        "rel_H1": 0.41201406717300415,
+        "min_detJ": null,
+        "fold_pct": null,
+        "displacement_mean": null
+      },
+      "wall_time_s": 17.108373641967773,
+      "n_params": 334737
+    },
+    {
+      "run_name": "chart-eq_chart_double_hole_seed0",
+      "domain": "double_hole",
+      "variant": "chart-eq",
+      "seed": 0,
+      "final": {
+        "rel_l2": 0.17443928122520447,
+        "rel_h1": 0.380202054977417,
+        "rel_H1": 0.3753110468387604,
+        "min_detJ": 0.03525717929005623,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.13547587394714355,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.02056976594030857,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 3.5762786865234375e-07,
+        "chart_det_floor": 1e-06,
+        "eq_residual_pct": 145.66871643066406
+      },
+      "wall_time_s": 51.48695778846741,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-eq_chart_double_hole_seed1",
+      "domain": "double_hole",
+      "variant": "chart-eq",
+      "seed": 1,
+      "final": {
+        "rel_l2": 0.15541042387485504,
+        "rel_h1": 0.3454848378896713,
+        "rel_H1": 0.3406469225883484,
+        "min_detJ": 0.032583024352788925,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.12622401118278503,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.020422987639904022,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 3.5762786865234375e-07,
+        "chart_det_floor": 1e-06,
+        "eq_residual_pct": 145.54171752929688
+      },
+      "wall_time_s": 49.31293439865112,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-eq_chart_double_hole_seed2",
+      "domain": "double_hole",
+      "variant": "chart-eq",
+      "seed": 2,
+      "final": {
+        "rel_l2": 0.16492288559675217,
+        "rel_h1": 0.34548161923885345,
+        "rel_H1": 0.3408055305480957,
+        "min_detJ": 0.06056696176528931,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.13459697365760803,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.024808304384350777,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 2.4586915969848633e-07,
+        "chart_det_floor": 1e-06,
+        "eq_residual_pct": 148.35279083251953
+      },
+      "wall_time_s": 49.71834182739258,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-fixed_chart_double_hole_seed0",
+      "domain": "double_hole",
+      "variant": "chart-fixed",
+      "seed": 0,
+      "final": {
+        "rel_l2": 0.18707550317049026,
+        "rel_h1": 0.41654500365257263,
+        "rel_H1": 0.41112738847732544,
+        "min_detJ": 0.5632864832878113,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.04039742425084114,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.5232096910476685,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 1.7881393432617188e-07,
+        "chart_det_floor": 1e-06
+      },
+      "wall_time_s": 46.89345955848694,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-fixed_chart_double_hole_seed1",
+      "domain": "double_hole",
+      "variant": "chart-fixed",
+      "seed": 1,
+      "final": {
+        "rel_l2": 0.17464715242385864,
+        "rel_h1": 0.3819988816976547,
+        "rel_H1": 0.3766975402832031,
+        "min_detJ": 0.32436102628707886,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.07347173988819122,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.2893628180027008,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 1.7881393432617188e-07,
+        "chart_det_floor": 1e-06
+      },
+      "wall_time_s": 45.280105113983154,
+      "n_params": 336339
+    },
+    {
+      "run_name": "chart-fixed_chart_double_hole_seed2",
+      "domain": "double_hole",
+      "variant": "chart-fixed",
+      "seed": 2,
+      "final": {
+        "rel_l2": 0.17850936204195023,
+        "rel_h1": 0.3821849524974823,
+        "rel_H1": 0.3769432604312897,
+        "min_detJ": 0.42016956210136414,
+        "fold_pct": 0.0,
+        "displacement_mean": 0.051085375249385834,
+        "lipschitz_bound": null,
+        "certified_det_lower_bound": 0.39526617527008057,
+        "is_certified": true,
+        "kappa": 1.0,
+        "chart_inverse_error": 1.7881393432617188e-07,
+        "chart_det_floor": 1e-06
+      },
+      "wall_time_s": 45.3723304271698,
+      "n_params": 336339
+    }
+  ],
+  "environment": {
+    "python": "3.11.2",
+    "platform": "Linux-6.1.158+-x86_64-with-glibc2.36",
+    "numpy": "2.4.6",
+    "torch": "2.15.0+cu132",
+    "torch_threads": 2,
+    "cuda_available": false,
+    "scipy": "1.17.1"
+  },
+  "n_runs": 18
+}

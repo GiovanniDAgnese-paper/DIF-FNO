@@ -1,0 +1,15 @@
+\begin{table}[h]
+\centering
+\caption{DIF-FNO benchmark reproduced with this repository (Darcy flow, 60 epochs, 80/20 split).}
+\label{tab:benchmark}
+\begin{tabular}{l|cc|cc|cc|}
+\hline
+\textbf{Domain} & \multicolumn{2}{c|}{\textbf{fno}} & \multicolumn{2}{c|}{\textbf{chart-eq}} & \multicolumn{2}{c|}{\textbf{chart-fixed}} \\
+ & $L^2$ & $H^1$ & $L^2$ & $H^1$ & $L^2$ & $H^1$ \\
+\hline
+double_hole & 0.1986 & 0.4251 & 0.1649 & 0.3571 & 0.1801 & 0.3936 \\
+slit & 0.2289 & 0.4460 & 0.1975 & 0.3834 & 0.2095 & 0.4182 \\
+\textbf{Average} & 0.2138 & 0.4355 & 0.1812 & 0.3702 & 0.1948 & 0.4059 \\
+\hline
+\end{tabular}
+\end{table}

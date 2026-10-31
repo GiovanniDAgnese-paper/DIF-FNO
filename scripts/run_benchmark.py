@@ -36,6 +36,7 @@ from itertools import product
 from pathlib import Path
 
 import numpy as np
+import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -79,6 +80,51 @@ VARIANTS: dict[str, dict] = {
         "conditioning": "pointwise",
         "description": "Ablation: unconstrained diffeomorphism at large deformation scale",
     },
+    "chart-fixed": {
+        "model": "chart",
+        "chart_conditioning": "none",
+        "chart_layers": 1,
+        "chart_hidden": 32,
+        "chart_fourier": 3,
+        "lambda_eq": 0.0,
+        "lambda_barrier": 0.0,
+        "barrier": "none",
+        "description": "D'Agnese Chart Operator: one learned certified chart (no equidistribution term)",
+    },
+    "chart-eq": {
+        "model": "chart",
+        "chart_conditioning": "none",
+        "chart_layers": 1,
+        "chart_hidden": 32,
+        "chart_fourier": 3,
+        "lambda_eq": 10.0,
+        "lambda_barrier": 0.0,
+        "barrier": "none",
+        "description": "D'Agnese Chart Operator + D'Agnese equidistribution loss",
+    },
+    "chart-cond": {
+        "model": "chart",
+        "chart_conditioning": "global",
+        "chart_layers": 1,
+        "chart_hidden": 32,
+        "chart_fourier": 3,
+        "latent_dim": 8,
+        "lambda_eq": 10.0,
+        "lambda_barrier": 0.0,
+        "barrier": "none",
+        "description": "D'Agnese Chart Operator with a per-sample chart (mesh model) + equidistribution",
+    },
+    "chart-deep": {
+        "model": "chart",
+        "chart_conditioning": "none",
+        "chart_layers": 3,
+        "chart_hidden": 32,
+        "chart_fourier": 3,
+        "lambda_eq": 10.0,
+        "lambda_barrier": 0.0,
+        "barrier": "none",
+        "description": "D'Agnese Chart Operator with three composed triangular charts",
+    },
     "dif-barrier-large": {
         "model": "dif",
         "lambda_barrier": 10.0,
@@ -115,6 +161,12 @@ def parse_args(argv=None):
     p.add_argument("--out", default="results/repro")
     p.add_argument("--device", default="cpu")
     p.add_argument("--log-every", type=int, default=20)
+    p.add_argument("--eval-every", type=int, default=1,
+                   help="evaluate the validation split every k epochs (the last epoch is always evaluated)")
+    p.add_argument("--threads", type=int, default=0,
+                   help="torch CPU threads (0 = leave the default)")
+    p.add_argument("--skip-existing", action="store_true",
+                   help="reuse runs already present in --out (resume a sweep)")
     p.add_argument("--quiet", action="store_true")
     p.add_argument("--list-variants", action="store_true")
     p.add_argument("--consolidate-only", action="store_true",
@@ -343,13 +395,27 @@ def main(argv=None) -> int:
         print((out_dir / "table.md").read_text())
         return 0
 
+    if args.threads > 0:
+        torch.set_num_threads(int(args.threads))
+
     runs = []
     failures: list[str] = []
     t0 = time.time()
     for domain, variant, seed in product(args.domains, args.variants, args.seeds):
         cfg = build_config(domain, variant, seed, epochs=args.epochs,
                            data_dir=args.data_dir, out_dir=str(out_dir),
-                           device=args.device, log_every=args.log_every)
+                           device=args.device, log_every=args.log_every,
+                           eval_every=args.eval_every)
+        if args.skip_existing:
+            done = out_dir / f"{cfg.tag}_{cfg.model}_{cfg.domain}_seed{cfg.seed}.json"
+            if done.exists():
+                try:
+                    runs.append(json.loads(done.read_text()))
+                    if not args.quiet:
+                        print(f"  skip (exists): {done.name}", flush=True)
+                    continue
+                except Exception:  # a truncated file: retrain it
+                    pass
         if not args.quiet:
             print(f"\n=== {variant} | {domain} | seed {seed} ===", flush=True)
         try:

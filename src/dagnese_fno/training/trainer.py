@@ -30,7 +30,8 @@ from ..geometry import (
     displacement_stats,
     jacobian_det,
 )
-from ..losses import DiffeomorphicOperatorLoss
+from ..geometry.transport import sample_field
+from ..losses import DiffeomorphicOperatorLoss, DagneseEquidistributionLoss
 from ..metrics import relative_H1, relative_h1, relative_l2
 from ..models import build_model
 from ..utils import describe_environment, set_seed
@@ -77,7 +78,7 @@ class TrainConfig:
     fc_channels: int = 64
     init: str = "v4"
 
-    # diffeomorphic branch
+    # diffeomorphic branch (DIF-FNO v1)
     diffeo_hidden: int = 32
     diffeo_layers: int = 2
     deformation_scale: float = 0.1
@@ -85,6 +86,20 @@ class TrainConfig:
     lipschitz_const: float = 0.9
     conditioning: str = "pointwise"       # "pointwise" | "global"
     latent_dim: int = 8
+
+    # certified chart branch (D'Agnese Chart Operator, v2)
+    chart_hidden: int = 32
+    chart_layers: int = 1
+    chart_fourier: int = 3
+    chart_activation: str = "tanh"
+    chart_conditioning: str = "none"      # "none" | "global"
+    chart_alpha: float = 0.0              # Jacobian exponent of the pullback
+    lambda_eq: float = 0.0                # weight of the D'Agnese equidistribution loss
+    loss_space: str = "physical"          # "physical" | "chart" (Jacobian-weighted)
+    eq_beta: float = 0.5
+    eq_floor: float = 1e-3
+    eq_smooth: int = 0
+    chart_min_increment: float = 1e-3
 
     # bookkeeping
     device: str = "cpu"
@@ -107,6 +122,10 @@ class TrainConfig:
             "lipschitz_mode": self.lipschitz_mode,
             "lipschitz_const": self.lipschitz_const,
             "conditioning": self.conditioning, "latent_dim": self.latent_dim,
+            "chart_hidden": self.chart_hidden, "chart_layers": self.chart_layers,
+            "chart_fourier": self.chart_fourier, "chart_activation": self.chart_activation,
+            "chart_conditioning": self.chart_conditioning, "alpha": self.chart_alpha,
+            "chart_min_increment": self.chart_min_increment,
         }
 
     def to_dict(self) -> dict:
@@ -115,6 +134,15 @@ class TrainConfig:
     @property
     def is_diffeomorphic(self) -> bool:
         return self.model.lower() in ("dif", "dif-fno", "dif_fno")
+
+    @property
+    def is_chart(self) -> bool:
+        return self.model.lower() in ("chart", "dao", "chart-fno", "chart_fno", "cpo")
+
+    @property
+    def has_chart(self) -> bool:
+        """True for every model that carries a kinematic chart (v1 diffeo or v2 chart)."""
+        return self.is_diffeomorphic or self.is_chart
 
 
 def max_gradient_norm(coeffs: torch.Tensor, mask: torch.Tensor, spacing: float) -> float:
@@ -171,7 +199,11 @@ def train_one(cfg: TrainConfig, verbose: bool = True) -> dict:
         alpha_h1=cfg.alpha_h1, lambda_barrier=cfg.lambda_barrier if cfg.is_diffeomorphic else 0.0,
         barrier=cfg.barrier, tau=cfg.tau, margin=cfg.margin,
         normalize_by_mask=cfg.normalize_by_mask,
+        loss_space=cfg.loss_space,
     )
+    eq_loss = DagneseEquidistributionLoss(
+        beta=cfg.eq_beta, floor=cfg.eq_floor, smooth=cfg.eq_smooth,
+    ) if (cfg.is_chart and cfg.lambda_eq > 0) else None
 
     run_name = f"{cfg.tag}_{cfg.model}_{cfg.domain}_seed{cfg.seed}"
     wandb_run = None
@@ -189,24 +221,39 @@ def train_one(cfg: TrainConfig, verbose: bool = True) -> dict:
         a_b = coeffs[idx]
         u_t = targets[idx]
         c_b = coords.unsqueeze(0).expand(len(idx), -1, -1, -1).contiguous()
+        if cfg.is_chart:
+            u_p, aux = model(c_b, a_b, mask=mask)
+            det_j = aux["det"]
+            eq = None
+            if eq_loss is not None:
+                monitor = eq_loss.monitor(a_b, spacing)
+                monitor_chart = sample_field(monitor, aux["phi"])
+                eq = eq_loss(monitor_chart, det_j)
+            return u_p, u_t, aux["phi"], det_j, eq, aux
         if cfg.is_diffeomorphic:
             u_p, xi = model(c_b, a_b, mask=mask)
             det_j = jacobian_det(xi, spacing=spacing)
-            return u_p, u_t, xi, det_j
+            return u_p, u_t, xi, det_j, None, None
         x = torch.cat([c_b, a_b.unsqueeze(-1)], dim=-1)
-        return model(x), u_t, None, None
+        return model(x), u_t, None, None, None, None
 
     @torch.no_grad()
     def evaluate(idx: torch.Tensor) -> dict:
         model.eval()
-        l2, h1, H1, dets, folds, disp = [], [], [], [], [], []
+        l2, h1, H1, dets, folds, disp, bounds, inv_errors = [], [], [], [], [], [], [], []
         for i in range(0, len(idx), cfg.batch_size):
             b = idx[i:i + cfg.batch_size]
-            u_p, u_t, xi, det_j = forward_batch(b)
+            u_p, u_t, xi, det_j, _, aux = forward_batch(b)
             up, ut = u_p * mask, u_t * mask
             l2.append(float(relative_l2(up, ut, mask)))
             h1.append(float(relative_h1(up, ut, mask, spacing)))
             H1.append(float(relative_H1(up, ut, mask, spacing)))
+            if aux is not None and aux.get("det_lb") is not None:
+                bounds.append(float(aux["det_lb"].min()))
+            if aux is not None and aux.get("code") is not None:
+                inv_errors.append(float(model.chart.inverse_consistency_error(coords, aux["code"])))
+            elif aux is not None:
+                inv_errors.append(float(model.chart.inverse_consistency_error(coords)))
             if det_j is not None:
                 stats = det_jacobian_stats(det_j, mask)
                 dets.append(stats["min"])
@@ -225,7 +272,26 @@ def train_one(cfg: TrainConfig, verbose: bool = True) -> dict:
             })
         else:
             out.update({"min_detJ": None, "fold_pct": None, "displacement_mean": None})
-        if cfg.is_diffeomorphic:
+        if cfg.is_chart:
+            out["lipschitz_bound"] = None
+            out["certified_det_lower_bound"] = (float(min(bounds)) if bounds
+                                                else float(model.certified_det_lower_bound(coords).min()))
+            out["is_certified"] = True
+            out["kappa"] = 1.0
+            out["chart_inverse_error"] = float(max(inv_errors)) if inv_errors else 0.0
+            out["chart_det_floor"] = float(model.chart.parameter_free_det_floor(coords.shape[-2]))
+            if eq_loss is not None:
+                a_all = coeffs[idx]
+                monitor = eq_loss.monitor(a_all, spacing)
+                eq_res = []
+                for i in range(0, len(idx), cfg.batch_size):
+                    b = idx[i:i + cfg.batch_size]
+                    _, aux = model(coords.unsqueeze(0).expand(len(b), -1, -1, -1).contiguous(),
+                                   coeffs[b], mask=mask)
+                    m_chart = sample_field(monitor[i:i + len(b)], aux["phi"])
+                    eq_res.append(float(eq_loss.residual(m_chart, aux["det"]).mean()))
+                out["eq_residual_pct"] = float(np.mean(eq_res))
+        elif cfg.is_diffeomorphic:
             lip = model.lipschitz_bound()
             k = kappa if cfg.conditioning == "pointwise" else 1.0
             out["lipschitz_bound"] = float(lip)
@@ -242,13 +308,16 @@ def train_one(cfg: TrainConfig, verbose: bool = True) -> dict:
     model.train()
     for epoch in range(cfg.epochs):
         t0 = time.time()
-        running = {"total": 0.0, "mse": 0.0, "h1": 0.0, "barrier": 0.0}
+        running = {"total": 0.0, "mse": 0.0, "h1": 0.0, "barrier": 0.0, "eq": 0.0}
         order = torch.randperm(n_train)
         n_batches = 0
         for i in range(0, n_train, cfg.batch_size):
             b = train_idx[order[i:i + cfg.batch_size]]
-            u_p, u_t, xi, det_j = forward_batch(b)
+            u_p, u_t, xi, det_j, eq, aux = forward_batch(b)
             loss, comps = criterion(u_p * mask, u_t * mask, mask, det_j, spacing=spacing)
+            if eq is not None:
+                loss = loss + cfg.lambda_eq * eq
+                running["eq"] += float(eq.detach())
             opt.zero_grad(set_to_none=True)
             loss.backward()
             if cfg.grad_clip is not None:
@@ -269,6 +338,7 @@ def train_one(cfg: TrainConfig, verbose: bool = True) -> dict:
             "train_mse": running["mse"] / max(n_batches, 1),
             "train_h1": running["h1"] / max(n_batches, 1),
             "train_barrier": running["barrier"] / max(n_batches, 1),
+            "train_eq": running["eq"] / max(n_batches, 1),
             "epoch_time_s": time.time() - t0,
         }
         if cfg.eval_every > 0 and (epoch % cfg.eval_every == 0 or epoch == cfg.epochs - 1):

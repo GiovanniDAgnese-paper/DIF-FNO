@@ -6,9 +6,11 @@ Baseline::
 
     python scripts/train.py --model fno --domain star --epochs 60 --seed 0
 
-DIF-FNO with the D'Agnese barrier::
+D'Agnese Chart Operator (certified, adaptive chart)::
 
-    python scripts/train.py --model dif --domain star --lambda-barrier 10 --tau 0.05
+    python scripts/train.py --model chart --domain star --lambda-eq 10
+
+DIF-FNO with the D'Agnese barrier::
 
 Certified (Lipschitz-constrained, folding-free by construction)::
 
@@ -32,7 +34,8 @@ def parse_args(argv=None):
     d = TrainConfig()
     # experiment
     p.add_argument("--domain", default=d.domain, choices=["star", "lshape", "annulus", "naca0012"])
-    p.add_argument("--model", default=d.model, choices=["fno", "dif"])
+    p.add_argument("--model", default=d.model,
+                   choices=["fno", "dif", "chart", "dao", "chart-fno", "cpo"])
     p.add_argument("--seed", type=int, default=d.seed)
     p.add_argument("--tag", default=d.tag)
     # data / optimisation
@@ -67,6 +70,20 @@ def parse_args(argv=None):
     p.add_argument("--lipschitz-const", type=float, default=d.lipschitz_const)
     p.add_argument("--conditioning", default=d.conditioning, choices=["pointwise", "global"])
     p.add_argument("--latent-dim", type=int, default=d.latent_dim)
+    # certified chart branch (D'Agnese Chart Operator)
+    p.add_argument("--chart-hidden", type=int, default=d.chart_hidden)
+    p.add_argument("--chart-layers", type=int, default=d.chart_layers)
+    p.add_argument("--chart-fourier", type=int, default=d.chart_fourier)
+    p.add_argument("--chart-activation", default=d.chart_activation)
+    p.add_argument("--chart-conditioning", default=d.chart_conditioning,
+                   choices=["none", "global"])
+    p.add_argument("--chart-alpha", type=float, default=d.chart_alpha)
+    p.add_argument("--chart-min-increment", type=float, default=d.chart_min_increment)
+    p.add_argument("--lambda-eq", type=float, default=d.lambda_eq)
+    p.add_argument("--eq-beta", type=float, default=d.eq_beta)
+    p.add_argument("--eq-floor", type=float, default=d.eq_floor)
+    p.add_argument("--eq-smooth", type=int, default=d.eq_smooth)
+    p.add_argument("--loss-space", default=d.loss_space, choices=["physical", "chart"])
     # bookkeeping
     p.add_argument("--device", default=d.device)
     p.add_argument("--out-dir", default=d.out_dir)
