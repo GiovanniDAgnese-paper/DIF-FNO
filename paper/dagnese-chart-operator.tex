@@ -83,15 +83,14 @@ equidistribution loss alone that compresses a boundary layer into $1.30$ mass
 ratio and reduces the representation error by $4.1\times$.  We also report a
 negative result — on a field whose monitor is already uniform, equidistribution
 \emph{hurts} ($0.54\times$) — and we explain why that is the expected behaviour
-of the objective rather than a defect of the method.  A paired-seed benchmark across six geometries and three seeds closes the gap
-between the guarantees and the PDE error: the operator improves the relative
-$L^2$ error by $9.3\%$ and the $H^1$ error by $10.2\%$ (pooled paired
-differences, $p<10^{-3}$ for both, sixteen of eighteen runs improved, six of six
-geometries), with zero folded cells and a positive certificate on every run.
-An ablation with the same chart, the same parameters and the same budget
-isolates the mechanism: adding the equidistribution loss to the chart improves
-seventeen of eighteen runs ($p=4\cdot10^{-4}$).  The effect is real, but modest,
-protocol specific, and not implied by the theory; we say so.
+of the objective rather than a defect of the method.  A paired-seed benchmark on six geometries (eighteen runs) measures what the
+guarantee costs: nothing.  The chart is \emph{neutral} on accuracy --- the pooled
+paired difference in relative $L^2$ is $-0.0004$ with a 95\% interval of
+$[-0.018,+0.017]$ --- while no run folds a single cell and every run reports a
+positive certified bound.  A penalised deformation buys the same accuracy and
+folds $12$--$22\%$ of its cells doing it.  Where the equidistribution term has
+structure to exploit (feature-dominated fields) it improves the representation
+by $2$--$4\times$; where it does not, it is inert rather than harmful.
 \end{abstract}
 
 \tableofcontents
@@ -162,14 +161,14 @@ contributions are:
   with its noise.
 \end{enumerate}
 
-We are deliberately conservative about the last item.  The guarantee is
-topological, not variational: nothing in \Cref{sec:chart,sec:loss} bounds the
-PDE error, and the accuracy we measure is a measurement.  What makes it
-informative is the ablation --- the same chart, with and without the
-equidistribution objective, at the same budget --- which separates ``a learned
-deformation'' (the chart alone) from ``an equidistributing one'' (the chart plus
-the loss).  \Cref{sec:discussion} says exactly which claims the measurements
-support and which they do not.
+We are deliberately conservative about the last item, because it is where this
+literature usually overreaches.  The guarantee is topological, not variational:
+nothing in \Cref{sec:chart,sec:loss} bounds the PDE error, and our benchmark
+measures no accuracy gain at all.  What it measures instead is the price of the
+guarantee, and the price is zero --- $0.00\%$ folded cells, a positive
+certificate and an exact inverse on every run, at the cost of $2.8\times$ wall
+clock and $0.5\%$ more parameters.  \Cref{sec:discussion} says exactly which
+claims the measurements support and which they do not.
 
 % =====================================================================
 \section{Setting and related work}
@@ -195,10 +194,11 @@ certified rather than encouraged, and (iii) the chart can be equidistributing,
 which is a criterion, not a heuristic.  Our \code{chart-only} variant is the
 empirical control for this comparison: a learned deformation, optimised only by
 the PDE loss, with no equidistribution prior — a Geo-FNO-like deformation inside
-our certified class.  It improves $H^1$ but not $L^2$ significantly
-(\Cref{sec:experiments}), so the gain we report is not the gain of ``learning a
-deformation'' in general; it is the gain of learning an \emph{equidistributing}
-one.
+our certified class: a learned deformation inside the certified class, which is
+what Geo-FNO is inside a class without one.  On our benchmark both variants are
+\emph{neutral} ($\Delta L^2=-0.0047$ and $-0.0004$, neither significant,
+\Cref{sec:experiments}), which separates the two literatures cleanly: what the
+chart buys is not accuracy, it is the impossibility of folding.
 
 \paragraph{Invertible networks.}  Normalising flows \cite{rezende2015variational,
 dinh2017density}, continuous-time flows \cite{chen2018neuralode} and invertible
@@ -617,49 +617,51 @@ the split is the dominant source of variance.
 
 \input{tables/benchmark}
 
-\paragraph{Result.}  The chart operator with the equidistribution loss improves
-the relative $L^2$ error on \emph{every} geometry.  Pooled over the eighteen
-paired runs (\Cref{tab:paired}), $\Delta L^2 = -0.0182$ (mean of per-run ratios
-$0.914$, i.e.\ $-8.6\%$; ratio of means $-9.3\%$), with $t=-4.36$,
-$p=4\cdot10^{-4}$ (Wilcoxon $p=3\cdot10^{-4}$), sixteen of eighteen runs
-improved and six of six geometry means negative (sign test
-$p=2^{-6}=0.016$).  For $H^1$: $\Delta H^1=-0.0413$, $t=-6.18$, $p<10^{-4}$.
-The chart alone (\code{chart-only}) is already a useful deformation:
-$\Delta L^2=-0.0108$, $t=-2.89$, $p=0.010$; but the ablation row of
-\Cref{tab:paired} isolates the contribution of the loss: \emph{with the
-identical architecture and the identical budget}, adding the equidistribution
-term improves seventeen of eighteen runs by a further $0.0073$ in $L^2$
-($t=-4.34$, $p=4\cdot10^{-4}$) and all eighteen in $H^1$ ($-0.0211$,
-$p<10^{-4}$).  The gain is therefore not the gain of ``learning a deformation'';
-it is the gain of learning an \emph{equidistributing} one.
+\paragraph{Result: no significant difference, and that is the finding.}  Pooled
+over the eighteen paired runs (\Cref{tab:paired}), the equidistributing chart
+moves the relative $L^2$ error by $\Delta L^2=-0.0004$, with a $95\%$ Student-t
+interval of $[-0.018,+0.017]$ ($t=-0.04$, $p=0.97$): ten of eighteen runs improve,
+three of six geometry means are negative.  The chart alone is
+$\Delta L^2=-0.0047$ ($p=0.57$, twelve of eighteen, five of six geometries) ---
+a hint, not a result --- and on $H^1$ the equidistributing chart is $+0.0199$
+(not significant).  \Cref{fig:benchmark} is the honest picture: the bars sit on
+the axis, and the star's interval is ten times wider than the others.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.62\textwidth]{../figures/paper/fig_benchmark.png}
 \caption{Paired difference in relative $L^2$ against the FNO, per geometry
-(bars, one per variant) with the seed standard deviation (error bars).  Every
-bar is below zero: the chart operator improves every geometry, and in every
-geometry the equidistribution term improves on the chart alone (seventeen of the
-eighteen runs).  Generated by \code{scripts/make\_paper\_table.py} from the
-per-run JSON.}
+(bars) with the seed standard deviation (error bars).  Nothing here is
+significant: the chart is neutral on accuracy, and the star's interval
+($[-0.22,+0.24]$) shows a domain with 654 active cells that three seeds cannot
+resolve.  Generated by \code{scripts/make\_paper\_table.py} from the per-run
+JSON.}
 \label{fig:benchmark}
 \end{figure}
 
-Three caveats, stated with the numbers.  (i) The pooled test treats the
-eighteen runs as independent while they are nested in six geometries; the
-domain-level sign test is why we also report six of six, which is the honest
-resolution of that nesting.  (ii) The effect is modest and protocol specific:
-$40$ epochs on $100$ samples per geometry, one backbone, one resolution, one
-PDE.  (iii) Two runs are \emph{worse} than their baseline (star, seeds 1 and 2):
-the chart is not a free lunch, and no theorem here promises one.
+\paragraph{What the benchmark does establish.}  Every one of the fifty-four runs
+has zero folded cells, $\min\detJ\ge0.321$, a positive certified bound
+($\ge0.204$) and an exact-inverse consistency error $\le3.6\cdot10^{-7}$
+(\Cref{tab:admissible}).  The v1 penalty achieves the same accuracy and folds
+$12$--$22\%$ of its cells while doing so.  That is the trade this paper
+proposes: the guarantee is free in accuracy, and it is absolute.
+
+\paragraph{Why the equidistribution term is nearly inert here.}  The learned
+chart barely moves on this data: $\min\detJ=0.95$ on the star, $0.32$ on the
+L-shape, $0.45$ on the airfoil, against $0.04$ on data with channelised layers.
+The gradient monitor of a log-normal coefficient is dominated by the jump at the
+mask boundary, and the canonical Darcy solution at this resolution has no layers
+for a mesh to resolve.  \Cref{sec:loss} is where the term earns its place:
+$2$--$4\times$ on feature-dominated fields, and $0.54\times$ --- worse --- on a
+smooth one.  A term that does nothing is not a term that hurts, and we report
+both faces.
 
 What \emph{is} guaranteed is the admissibility column of
-\Cref{tab:admissible}: zero folded cells and a positive certificate on every run, with $\min\detJ\ge0.033$, a certified bound
-$\ge0.020$ and an inverse-consistency error $\le1.3\cdot10^{-6}$ -- while the
-chart deforms the grid substantially: it compresses cells by a factor $30$ on
-four of the six geometries (L-shape, airfoil, crack, two holes), which is
-exactly the adaptation \Cref{sec:loss} asks for, and leaves the star and the
-annulus alone, where the monitor is smooth.
+\Cref{tab:admissible}: zero folded cells and a positive certificate on every run, with $\min\detJ\ge0.321$, a certified bound
+$\ge0.204$ and an inverse-consistency error $\le1.3\cdot10^{-6}$ -- while the
+chart deforms the grid where it can (it moves cells by up to $11\%$ of the
+domain and compresses the smallest ones to $\detJ=0.32$ on the L-shape), always
+inside the certified class.
 
 % =====================================================================
 \section{Discussion and limitations}
@@ -693,14 +695,11 @@ representation (\Cref{tab:eq}) — with a negative case.
   whose exactness is asserted at the nodes, so ``exact'' throughout means exact
   in the piecewise-bilinear discretisation, not in the continuum.
 \item The cost is real: $\times2.8$ wall clock at $N=64$ on CPU.
-\item The equidistribution term drives the chart \emph{towards} the floor: with
-  $\lambda_{\mathrm{eq}}=10$ the trained chart reaches $\min\detJ = 0.033$ over
-  the eighteen runs (certified $0.020$), i.e.\ cells compressed by a factor
-  $30$ where the monitor demands it.  It stays injective and above the certified
-  floor, and the phenomenon is systematic rather than an outlier, so a cap on
-  the term (or a regularity penalty on $\detJ$) is the natural next
-  regularisation.  We do not cap it here: we report the numbers and the
-  certificate that makes the regime visible during training.
+\item The accuracy claim is \emph{null}, not merely small: the pooled interval of
+  \Cref{tab:paired} contains zero, and its width ($\pm0.018$) exceeds any effect
+  we measured on a single geometry.  Demonstrating a genuine accuracy gain would
+  need more epochs, a higher resolution and a data regime with layers --- three
+  things we did not do.
 \end{itemize}
 
 \paragraph{Reproducibility.}  Every number in this paper is produced by two

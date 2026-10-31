@@ -24,9 +24,14 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import sys
 from pathlib import Path
 
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from dagnese_fno.evaluation import paired_test, sign_test, significance_stars  # noqa: E402
 
 METRICS = ("rel_l2", "rel_h1")
 TOPOLOGY = ("fold_pct", "min_detJ", "certified_det_lower_bound", "chart_inverse_error")
@@ -73,21 +78,35 @@ def paired(runs, variant, domains, metric, reference):
     return np.asarray(diffs), np.asarray(refs), np.asarray(vals)
 
 
-def tests(diffs: np.ndarray) -> dict:
-    n = len(diffs)
-    if n < 2:
-        return {"n": n}
-    m, sd = float(diffs.mean()), float(diffs.std(ddof=1))
-    se = sd / math.sqrt(n)
-    t = m / se if se > 0 else float("nan")
-    out = {"n": n, "mean": m, "sd": sd, "se": se, "t": t, "negative": int((diffs < 0).sum())}
-    try:
-        from scipy import stats
-        out["p_two_sided"] = 2.0 * float(stats.t.sf(abs(t), n - 1))
-        out["wilcoxon_p_less"] = float(stats.wilcoxon(diffs, alternative="less").pvalue)
+def tests(a: np.ndarray, b: np.ndarray) -> dict:
+    """Paired inference, delegated to :mod:`dagnese_fno.evaluation.statistics`.
+
+    The library function is the single implementation of the paired test in the
+    repository (it also backs ``run_benchmark.py``); this wrapper only renames
+    the keys and adds the t statistic, which is the number the paper quotes.
+    """
+    res = paired_test(list(a), list(b))
+    d = a - b
+    n = int(len(d))
+    out = {
+        "n": n,
+        "mean": float(d.mean()),
+        "sd": float(d.std(ddof=1)) if n > 1 else 0.0,
+        "se": float(d.std(ddof=1) / math.sqrt(n)) if n > 1 else 0.0,
+        "negative": int((d < 0).sum()),
+        "p_two_sided": res["t_pvalue"],
+        "wilcoxon_p_less": float("nan"),
+        "ci_low": res["ci_low"],
+        "ci_high": res["ci_high"],
+        "stars": significance_stars(res["t_pvalue"]),
+    }
+    out["t"] = out["mean"] / out["se"] if out["se"] > 0 else float("nan")
+    try:  # one-sided Wilcoxon, the confirmatory direction (variant better = negative)
+        from scipy import stats as _st
+        if n >= 6 and not np.allclose(d, d[0]):
+            out["wilcoxon_p_less"] = float(_st.wilcoxon(d, alternative="less").pvalue)
     except Exception:  # pragma: no cover - scipy optional
-        out["p_two_sided"] = float("nan")
-        out["wilcoxon_p_less"] = float("nan")
+        pass
     return out
 
 
@@ -95,11 +114,6 @@ def _extreme(values, how):
     """min/max that ignores ``None``; returns ``None`` for an empty selection."""
     vals = [float(v) for v in values if v is not None and np.isfinite(v)]
     return getattr(np, how)(vals) if vals else None
-
-
-def sign_test(k: int, n: int) -> float:
-    """One-sided binomial p-value for ``k`` of ``n`` successes at p = 1/2."""
-    return sum(math.comb(n, i) for i in range(k, n + 1)) / 2.0 ** n
 
 
 def main(argv=None) -> int:
@@ -129,7 +143,7 @@ def main(argv=None) -> int:
             diffs, refs, vals = paired(runs, v, domains, metric, args.reference)
             if len(diffs) < 2:
                 continue
-            stats = tests(diffs)
+            stats = tests(vals, refs)
             stats["ratio_of_means"] = float(vals.mean() / refs.mean())
             stats["mean_of_ratios"] = float((vals / refs).mean())
             per_domain = []
@@ -151,7 +165,9 @@ def main(argv=None) -> int:
                 f"- pooled: n = {stats['n']}, mean = {stats['mean']:+.4f}, "
                 f"sd = {stats['sd']:.4f}, t = {stats['t']:+.2f}, "
                 f"p(two-sided) = {stats['p_two_sided']:.4f}, "
-                f"p(Wilcoxon, less) = {stats['wilcoxon_p_less']:.4f}",
+                f"p(Wilcoxon, less) = {stats['wilcoxon_p_less']:.4f} {stats['stars']}",
+                f"- 95 % CI of the mean difference: [{stats['ci_low']:+.4f}, "
+                f"{stats['ci_high']:+.4f}]",
                 f"- improving runs: {stats['negative']}/{stats['n']}  "
                 f"|  gain: {100 * (1 - stats['mean_of_ratios']):+.2f} % "
                 f"(mean of ratios), {100 * (1 - stats['ratio_of_means']):+.2f} % (ratio of means)",

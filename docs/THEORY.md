@@ -130,13 +130,18 @@ by $1/\varepsilon$.
   $\|D\|_2 = \sqrt{1 + \|\nabla a\|^2}$ and one must take
   $\kappa = \sqrt{1 + \max_\xi \|\nabla a(\xi)\|^2}$.
 
-  **This matters:** for the log-normal coefficients used in the benchmark
-  ($a \in [e^{-2}, e^{2}]$ varying on a grid with $h = 2/63$) the measured
-  $\max\|\nabla a\|$ is of order $10^2$, hence $\kappa \approx 3\cdot 10^2$ and a
-  certificate would require $L < 3\cdot10^{-3}$ — i.e. a *provably*
-  folding-free pointwise map can only be an infinitesimal perturbation of the
-  identity.  Global conditioning removes that obstruction ($\kappa = 1$) and is
-  the configuration used by the `dif-certified` variant.
+  **This matters:** for the log-normal coefficients of the benchmark
+  ($a \in [e^{-2}, e^{2}]$, $h = 2/63$, contrast $\gamma = 2$) the measured
+  $\max\|\nabla a\|$ is $35$–$41$ (star $40.9$, L-shape $36.1$, annulus $38.2$,
+  NACA 0012 $35.0$), hence $\kappa \approx 4\cdot 10^{1}$: a pointwise
+  certificate would require $L < 1/\kappa \approx 0.025$ — a *provably*
+  folding-free pointwise map can only be a small perturbation of the identity.
+  (The maximum is taken over the cells whose forward stencil is entirely active:
+  one-sided differences in the boundary layer mix $a$ with the constant fill
+  value used outside the mask, which is an artefact of the discretisation
+  rather than a property of the permeability.)  Global conditioning removes the
+  obstruction altogether ($\kappa = 1$) and is the configuration used by the
+  `dif-certified` variant.
 
 Tests: `test_spectral_mode_enforces_the_lipschitz_bound`,
 `test_lipschitz_bound_survives_training`,
@@ -500,13 +505,14 @@ reported here so that the reader does not over-read P8.  No theorem is claimed.
 * $\det J > 0$ everywhere does not make the *network* well conditioned, does not
   bound the Lipschitz constant of the operator, and does not bound the PDE error.
 * Nothing in P5–P8 *implies* that the chart improves accuracy.  P7(iv) bounds a
-  representation error; §P7's table shows that the bound is productive for
-  feature-dominated fields and neutral otherwise.  The accuracy claims live or
-  die in `results/v2/TABLE.md`, with paired seeds and the seed noise reported —
-  and there the chart wins: pooled $\Delta L^2 = -0.0182$ ($p=4\cdot10^{-4}$),
-  $\Delta H^1 = -0.0413$ ($p<10^{-4}$) over eighteen paired runs on six
-  geometries, with an ablation that isolates the loss ($-0.0073$, 17/18 runs).
-  That is a measurement on one protocol, not a theorem.
+  representation error; the P7 table shows that the bound is productive for
+  feature-dominated fields and neutral (or negative) otherwise.  The accuracy
+  claims live or die in `results/v2/TABLE.md`, with paired seeds and the seed
+  noise reported — and there the chart is **neutral**: pooled
+  $\Delta L^2 = -0.0004$ with a 95\u00a0% interval of $[-0.018,+0.017]$ over eighteen
+  paired runs on six geometries, and $\Delta H^1 = +0.0199$ (n.s.).  That is a
+  measurement on one protocol, and it is a null one.  The guarantee, not the
+  error, is the claim of this document.
 * The `dif*` rows of `results/repro` were produced with the original v1 data
   pipeline; they are not numerically comparable to the `results/v2` sweep, which
   is internally consistent.  Do not mix the two tables.

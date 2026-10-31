@@ -16,9 +16,12 @@ venv/
 coverage.xml
 htmlcov/
 
-# Data & experiment outputs (keep results/: they are the provenance of the tables)
-/data/
-real_data/
+# Data & experiment outputs (keep results/: they are the provenance of the tables).
+# Anchored at the repository root: `data/` also matches the *package*
+# src/dagnese_fno/data, which must stay tracked.
+/data/*.pt
+/data/*.npz
+/real_data/
 *.pt
 wandb/
 *.synced

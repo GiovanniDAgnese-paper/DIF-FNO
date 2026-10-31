@@ -1,0 +1,190 @@
+{
+  "args": {
+    "contrast": 2.0,
+    "domains": [
+      "star",
+      "lshape",
+      "annulus",
+      "naca0012",
+      "slit",
+      "double_hole"
+    ],
+    "forcing": 1.0,
+    "n": 64,
+    "n_modes": 6,
+    "out": "data",
+    "overwrite": false,
+    "samples": 100,
+    "seed": null
+  },
+  "generated": {
+    "annulus": {
+      "bbox_cells": [
+        4,
+        59,
+        4,
+        59
+      ],
+      "coeff_max": 7.389056205749512,
+      "coeff_min": 0.1353352814912796,
+      "coeffs_shape": [
+        100,
+        64,
+        64
+      ],
+      "fill_fraction": 0.458984375,
+      "n_active": 1880,
+      "n_cells": 4096,
+      "n_components": 1,
+      "n_holes": 1,
+      "seconds": 0.38,
+      "seed": 2,
+      "shape": [
+        64,
+        64
+      ],
+      "spacing": 0.031746031746031744,
+      "target_max": 0.11661083251237869
+    },
+    "double_hole": {
+      "bbox_cells": [
+        1,
+        62,
+        1,
+        62
+      ],
+      "coeff_max": 7.389056205749512,
+      "coeff_min": 0.1353352814912796,
+      "coeffs_shape": [
+        100,
+        64,
+        64
+      ],
+      "fill_fraction": 0.84375,
+      "n_active": 3456,
+      "n_cells": 4096,
+      "n_components": 1,
+      "n_holes": 2,
+      "seconds": 0.76,
+      "seed": 5,
+      "shape": [
+        64,
+        64
+      ],
+      "spacing": 0.031746031746031744,
+      "target_max": 0.26628750562667847
+    },
+    "lshape": {
+      "bbox_cells": [
+        1,
+        62,
+        1,
+        62
+      ],
+      "coeff_max": 7.389056205749512,
+      "coeff_min": 0.1353352814912796,
+      "coeffs_shape": [
+        100,
+        64,
+        64
+      ],
+      "fill_fraction": 0.703857421875,
+      "n_active": 2883,
+      "n_cells": 4096,
+      "n_components": 1,
+      "n_holes": 0,
+      "seconds": 0.65,
+      "seed": 1,
+      "shape": [
+        64,
+        64
+      ],
+      "spacing": 0.031746031746031744,
+      "target_max": 0.49130576848983765
+    },
+    "naca0012": {
+      "bbox_cells": [
+        1,
+        62,
+        1,
+        62
+      ],
+      "coeff_max": 7.389056205749512,
+      "coeff_min": 0.1353352814912796,
+      "coeffs_shape": [
+        100,
+        64,
+        64
+      ],
+      "fill_fraction": 0.921875,
+      "n_active": 3776,
+      "n_cells": 4096,
+      "n_components": 1,
+      "n_holes": 1,
+      "seconds": 0.85,
+      "seed": 3,
+      "shape": [
+        64,
+        64
+      ],
+      "spacing": 0.031746031746031744,
+      "target_max": 0.5415159463882446
+    },
+    "slit": {
+      "bbox_cells": [
+        1,
+        62,
+        1,
+        62
+      ],
+      "coeff_max": 7.389056205749512,
+      "coeff_min": 0.1353352814912796,
+      "coeffs_shape": [
+        100,
+        64,
+        64
+      ],
+      "fill_fraction": 0.908203125,
+      "n_active": 3720,
+      "n_cells": 4096,
+      "n_components": 1,
+      "n_holes": 0,
+      "seconds": 0.78,
+      "seed": 4,
+      "shape": [
+        64,
+        64
+      ],
+      "spacing": 0.031746031746031744,
+      "target_max": 0.40515241026878357
+    },
+    "star": {
+      "bbox_cells": [
+        13,
+        55,
+        9,
+        54
+      ],
+      "coeff_max": 7.389056205749512,
+      "coeff_min": 0.1353352814912796,
+      "coeffs_shape": [
+        100,
+        64,
+        64
+      ],
+      "fill_fraction": 0.15966796875,
+      "n_active": 654,
+      "n_cells": 4096,
+      "n_components": 1,
+      "n_holes": 0,
+      "seconds": 0.14,
+      "seed": 0,
+      "shape": [
+        64,
+        64
+      ],
+      "spacing": 0.031746031746031744,
+      "target_max": 0.03357391059398651
+    }
+  }
+}

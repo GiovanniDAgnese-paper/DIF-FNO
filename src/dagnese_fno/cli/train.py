@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from ..data import DOMAINS
 from ..training import TrainConfig, save_result, train_one
 
 
@@ -33,7 +34,8 @@ def parse_args(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     d = TrainConfig()
     # experiment
-    p.add_argument("--domain", default=d.domain, choices=["star", "lshape", "annulus", "naca0012"])
+    p.add_argument("--domain", default=d.domain, choices=sorted(DOMAINS),
+                   help="computational domain (default: %(default)s)")
     p.add_argument("--model", default=d.model,
                    choices=["fno", "dif", "chart", "dao", "chart-fno", "cpo"])
     p.add_argument("--seed", type=int, default=d.seed)

@@ -12,9 +12,9 @@ number is checkable in one command.**
 ## 1. One line
 
 > A neural operator whose grid is a *certified diffeomorphism*: it cannot fold,
-> it has a closed-form inverse, it costs 1 602 parameters, and on a six-geometry
-> Darcy benchmark it cuts the relative L2 error by 8.6 % and H1 by 9.7 %
-> (18 paired runs, p < 10⁻³).
+> it has a closed-form inverse, it costs 1 602 parameters — and on a six-geometry
+> Darcy benchmark it changes the L2 error by −0.04 % (95 % CI [−1.8 %, +1.7 %]).
+> The guarantee is free; accuracy was never the promise.
 
 ## 2. Abstract (150 words, portable)
 
@@ -53,21 +53,24 @@ the same budget, adding it improves 17 of 18 runs.
    Equidistribution Loss, whose minimiser is the optimal transport map for the
    monitor. Classical theory (de Boor–Babuška–Rheinboldt) does the rest.
 5. Benchmark: 6 geometries (star, L-shape, annulus, airfoil, a crack, a plate
-   with two holes) × 3 seeds, paired. L2 −8.6 %, H1 −9.7 %, p < 10⁻³, 16/18 runs,
-   6/6 geometries. Cost ×2.8 per step, +0.5 % parameters.
-6. The load-bearing experiment is the ablation, not the headline: the *same*
-   chart without the equidistribution term improves only 11/18 runs. Adding the
-   loss moves 17/18 by a further 0.0073. The gain is the loss, not the extra
-   parameters.
-7. Everything is reproducible in three commands and the paper says what it does
-   *not* show (the certificate is a worst case; the effect is small; two runs
-   lose). Repo + paper + tests: <link>.
+   with two holes) × 3 seeds, paired. Result: **no significant difference**
+   (ΔL2 = −0.0004, 95 % CI [−0.018, +0.017]), 0.00 % folded cells on all 54 runs,
+   min det J ≥ 0.32, certificate ≥ 0.20. Cost ×2.8 per step, +0.5 % parameters.
+6. The load-bearing result is the *negative* one: a penalised deformation
+   (v1) folds 12–22 % of its cells and scores the same. The chart scores the same
+   and cannot fold — its failure mode is outside the model class, not priced
+   into the loss.
+7. Everything is reproducible in three commands, and the paper reports the null
+   with its interval instead of hiding it: where the equidistribution term *does*
+   pay (feature-dominated fields) it gives 2–4×, and where it has nothing to do
+   it is inert, not harmful. Repo + paper + tests: <link>.
 
 ## 4. Explainer hooks (for a blog post or a lab page)
 
 * **The failure mode nobody plots.** Folded grids do not raise errors; they
   quietly change the function being learned. Show the v1 ablation: 12–22 % folded
-  cells, identical loss curve.
+  cells, same accuracy as the certified chart — you pay the same and get a
+  guarantee in one case and a hope in the other.
 * **"Certified" should mean certified.** A bound that depends on the parameters
   is a hope. The floor here is `ε² = (2ε/(KΔξ))²`, independent of θ, N and the
   deformation size — and it is the *worst case*, which is why the paper also

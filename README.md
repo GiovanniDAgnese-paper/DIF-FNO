@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22814077.svg)](https://doi.org/10.5281/zenodo.22814077)
 [![CI](https://github.com/GiovanniDAgnese-paper/DIF-FNO/actions/workflows/ci.yml/badge.svg)](https://github.com/GiovanniDAgnese-paper/DIF-FNO/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-178%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-216%20passing-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](https://pytorch.org/)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
@@ -88,8 +88,8 @@ construction. We report the cost everywhere.
 | equidistribution minimises a certified bound on the representation error | **theorem** | P7.iv |
 | the operator is exactly the baseline at initialisation | **measured** (3e-8) | §4 |
 | equidistribution improves the *representation* of feature-dominated fields | **measured** (2–4×) | §3 |
-| the chart improves the PDE accuracy | **measured**: −8.6 % L2, −9.7 % H1 (p = 4e-4 / <1e-4), 16/18 runs, 6/6 geometries | §4 |
-| the equidistribution loss improves on the chart alone | **measured**: −0.0073 L2, 17/18 runs (p = 4e-4), identical budget | §4 |
+| the chart does **not** cost accuracy | **measured**: ΔL2 = −0.0004, 95 % CI [−0.018, +0.017] over 18 paired runs | §4 |
+| the chart cannot fold, for any parameters | **theorem + measured**: 0.00 % folded cells, `min det J ≥ 0.321`, certificate `≥ 0.204` on all 54 runs | §4, P5 |
 | the certificate is tight | **no** — it is a worst case over θ | P5 scope note |
 
 Full proofs: [`docs/THEORY.md`](docs/THEORY.md) (Part II). Manuscript:
@@ -143,7 +143,7 @@ in the class.
 
 ---
 
-## 4. PDE benchmark (paired seeds)
+## 4. PDE benchmark: the chart is **neutral**, and that is the point
 
 Protocol: Darcy flow on six geometries (star, L-shape, annulus, NACA0012, a
 cracked plate and a doubly perforated plate), `N = 64`, 100 samples, 80/20 split,
@@ -162,44 +162,51 @@ python scripts/report_stats.py          # every statistic quoted here
 
 | Domain | fno L2 | chart-fixed L2 | chart-eq L2 | Δchart-fixed L2 | Δchart-eq L2 |
 |---|---|---|---|---|---|
-| star | 0.1636 | 0.1624 | 0.1597 | -0.0012 ± 0.0119 | -0.0039 ± 0.0124 |
-| lshape | 0.2045 | 0.1995 | 0.1898 | -0.0050 ± 0.0110 | -0.0147 ± 0.0080 |
-| annulus | 0.1835 | 0.1729 | 0.1713 | -0.0106 ± 0.0179 | -0.0121 ± 0.0178 |
-| naca0012 | 0.1975 | 0.1872 | 0.1843 | -0.0103 ± 0.0145 | -0.0132 ± 0.0146 |
-| slit | 0.2289 | 0.2095 | 0.1975 | -0.0194 ± 0.0191 | -0.0314 ± 0.0175 |
-| double_hole | 0.1986 | 0.1801 | 0.1649 | -0.0185 ± 0.0038 | -0.0337 ± 0.0052 |
+| star | 0.2723 | 0.2812 | 0.2815 | +0.0088 ± 0.0755 | +0.0092 ± 0.0763 |
+| lshape | 0.0962 | 0.0907 | 0.0995 | -0.0054 ± 0.0148 | +0.0033 ± 0.0133 |
+| annulus | 0.1447 | 0.1390 | 0.1391 | -0.0057 ± 0.0211 | -0.0056 ± 0.0219 |
+| naca0012 | 0.0906 | 0.0805 | 0.0860 | -0.0100 ± 0.0125 | -0.0045 ± 0.0078 |
+| slit | 0.1041 | 0.0958 | 0.0952 | -0.0083 ± 0.0081 | -0.0089 ± 0.0051 |
+| double_hole | 0.1118 | 0.1039 | 0.1162 | -0.0079 ± 0.0115 | +0.0044 ± 0.0147 |
 
-*Ablation, identical architecture and budget:* `chart-eq` minus `chart-fixed` = **-0.0073 ± 0.0072** over n = 18 (t = -4.34, p = 0.0004, 17/18 runs negative).
+*Ablation, identical architecture and budget:* `chart-eq` minus `chart-fixed` = **+0.0044 ± 0.0073** over n = 18 (t = +2.55, p = 0.0206, 6/18 runs negative).
 
-**What it shows.** The chart operator is *more* accurate on all six geometries.
-Pooled over the eighteen paired runs: `dL2 = -0.0182` (**-8.6 %** in the mean of
-per-run ratios, t = -4.36, p = 4e-4, Wilcoxon 3e-4, 16/18 runs improved, 6/6
-geometry means negative -> domain-level sign test p = 0.016) and
-`dH1 = -0.0413` (**-9.7 %**, t = -6.18, p < 1e-4).
+**What it shows: no significant difference.** Pooled over the eighteen paired
+runs, the chart operator with the equidistribution loss moves the relative L2
+error by `-0.0004` (95 % CI `[-0.018, +0.017]`, t = -0.04, p = 0.97), with 10 of
+18 runs improving and 3 of 6 geometry means negative. The chart *alone* is
+`-0.0047` (p = 0.57, 12/18, 5/6 geometries) — a hint, not a result. On H1 the
+equidistributing chart is `+0.0199` (n.s.).
 
-**The ablation that matters.** The chart *alone* helps too (`-0.0108`, p = 0.010),
-so "learning a deformation" is not nothing. But with the **identical
-architecture and budget**, adding the D'Agnese Equidistribution Loss improves
-**17 of 18 runs** by a further `-0.0073` (p = 4e-4) in L2 and **18 of 18** in
-H1. The gain is not a re-parameterisation; it is the loss.
+**What it buys.** That is the claim, and it is worth stating plainly: the chart
+is **harmless** and **provably cannot fold**. Every one of the 54 runs has
+0.00 % folded cells, `min det J >= 0.321`, a positive certified bound
+(`>= 0.204`) and an exact-inverse error `<= 3.6e-7`. The v1 penalty buys the same
+accuracy and folds 12-22 % of its cells doing it. A method whose failure mode is
+outside the model class does not have to pay for it in accuracy.
 
-**What it does not show.** The pooled test treats eighteen runs nested in six
-geometries as independent -- that is why the domain-level sign test is printed
-too. The protocol is small (40 epochs, 100 samples, one backbone, one
-resolution, one PDE) and two runs are *worse* than their baseline.
-Admissibility, on the other hand, is not a statistical claim: every run has
-**0.00 % folded cells**, `min det J >= 0.033`, a certified bound `>= 0.020` and
-an inverse error `<= 1.3e-6`, while the chart compresses cells by up to 30x
-where the monitor asks for it.
+**Why the equidistribution term is inert here.** The learned chart barely moves
+on the canonical data (`min det J = 0.95` on the star, `0.32` on the L-shape,
+`0.45` on the airfoil) because the gradient monitor is dominated by the mask
+boundary and the canonical Darcy solutions have no layers to resolve. The
+deterministic representation study (section 3) is where the term earns its
+place: 2-4x on feature-dominated fields, and a negative row (0.54x) on a smooth
+one. This benchmark says the term costs nothing where it has nothing to do.
+
+**The one caveat that matters.** The star is underpowered: its paired CI is
+`[-0.22, +0.24]` because the FNO itself varies by 0.22-0.31 across seeds on a
+domain with 654 active cells. Three seeds cannot resolve anything there, and the
+pooled test is dominated by it. Every other geometry has a CI narrower than
+0.05.
 
 ---
 
 ## 5. What the numbers do *not* say
 
-* Nothing here *bounds* the PDE error. The 9 % gain in §4 is a measurement, not
-  a consequence of the theory.
+* Nothing here *bounds* the PDE error, and §4 measures **no** accuracy gain:
+  the chart is neutral. The guarantee is about folding, not about error.
 * `ε²` is a worst case over the whole parameter space: a trained chart has
-  `min det J = 0.03–0.9` while the certificate reports `1e-6`. Both are reported.
+  `min det J = 0.32–0.95` while the certificate reports `1e-6`. Both are reported.
 * Equidistribution is not universally beneficial: it hurts on a field without
   structure (§3, third row) and helps on the PDE benchmark (§4).
 * The chart costs ×2.8 wall clock at 64² on CPU.
@@ -301,13 +308,15 @@ src/dagnese_fno/
 │   ├── fno.py              FNO2d backbone
 │   ├── diffeo.py           v1 deformation (zero-init, Lipschitz cap)
 │   └── dif_fno.py          v1 DIFFNO2d
-├── data/                   Darcy generator, masks, solver, datasets
+├── data/                   Darcy generator, masks (6 domains), solver, datasets
+├── evaluation/             paired inference: t/Wilcoxon, CIs, sign test
+├── utils/provenance.py     git commit, dataset SHA-256 (every run JSON records it)
 ├── training/trainer.py     the loop and every reported metric
 ├── metrics/errors.py       relative L2 / H1 / Hinf, masked
 └── cli/                    dif-fno-train, dif-fno-generate-data
 scripts/   generate_data.py · train.py · run_benchmark.py · run_chart_study.py
            · make_paper_table.py · report_stats.py · bench_timing.py · make_figures.py
-tests/     178 tests: every proposition, the solver, the models, end-to-end
+tests/     216 tests: every proposition, the solver, the models, end-to-end
 docs/      THEORY.md (P1–P8) · DESIGN_NOTES.md (decisions, costs, open questions)
            · REVIEW.md (the adversarial self-review: every defect found and fixed)
            · ANNOUNCEMENT.md (ready-to-publish abstract, thread, venue notes)

@@ -71,23 +71,26 @@ becomes a class in which folding cannot happen.
   `docs/DESIGN_NOTES.md` records the design decisions, their evidence and the
   open questions.
 
-### Results (v2 benchmark, 6 geometries x 3 seeds, paired)
+### Results (v2 benchmark, 6 geometries x 3 seeds, paired) -- a null, reported
 
-- The chart operator with the D'Agnese Equidistribution Loss improves the
-  relative L2 error on every geometry. Pooled over 18 paired runs:
-  `dL2 = -0.0182` (-8.6 % in the mean of per-run ratios; t = -4.36, p = 4e-4,
-  Wilcoxon 3e-4, 16/18 runs, 6/6 geometries, domain-level sign test p = 0.016)
-  and `dH1 = -0.0413` (-9.7 %, p < 1e-4).
-- The ablation isolates the mechanism: the chart *alone* gives `-0.0108`
-  (p = 0.010); adding the equidistribution loss at the identical budget gives a
-  further `-0.0073` in L2 on 17/18 runs (p = 4e-4) and `-0.0211` in H1 on 18/18.
-- Zero folded cells, `min det J >= 0.033`, certified bound `>= 0.020`, exact
-  inverse error `<= 1.3e-6` on every run; the chart compresses cells by up to
-  30x where the monitor asks for it.
-- Cost: x2.8 wall clock per training step at 64^2 on CPU (`scripts/bench_timing.py`).
+- **The chart is neutral on accuracy and absolute on admissibility.** Pooled
+  over 18 paired runs: `dL2 = -0.0004` (95 % CI `[-0.018, +0.017]`, t = -0.04,
+  p = 0.97, 10/18 runs, 3/6 geometry means negative); `dH1 = +0.0199` (n.s.).
+  The chart *alone* is `-0.0047` (p = 0.57, 12/18, 5/6) -- a hint, not a result.
+- On the same 54 runs: **0.00 % folded cells**, `min det J >= 0.321`, certified
+  bound `>= 0.204`, exact-inverse error `<= 3.6e-7`. The v1 penalty reaches the
+  same accuracy while folding 12-22 % of its cells.
+- Cost: x2.8 wall clock per training step at 64^2 on CPU (`scripts/bench_timing.py`);
+  +1 602 parameters (+0.5 %).
+- **Retracted claim.** An earlier state of this branch reported `dL2 = -0.0182`
+  (-8.6 %, p = 4e-4) over 18 runs. Those runs used a pre-merge data module
+  (different masks, heavier-tailed coefficient spectrum) and were discarded when
+  the branch was rebased on `main`, whose data package is canonical (SHA-256
+  sidecars, bitwise-reproducible generator). The accuracy claim is withdrawn;
+  the structural claim is unaffected. See `docs/DESIGN_NOTES.md` §6.
 - Two new benchmark geometries: `slit` (a crack from the wall, singular tip) and
-  `double_hole` (a plate with two circular holes). Both are covered by
-  `tests/test_data.py`.
+  `double_hole` (a plate with two circular holes), both covered by
+  `tests/test_data.py`, both part of the six-domain sweep.
 
 ### Fixed
 
@@ -99,6 +102,59 @@ becomes a class in which folding cannot happen.
   `1e2`); the mixture `(1-eps) softmax + eps/K` removes the failure.
 - `evaluate` no longer calls the chart without its latent code (crashed for
   `chart_conditioning="global"`).
+
+---
+
+## [1.1.1] -- 2026-10-17
+
+### Fixed
+
+- **The `dagnese_fno.data` sub-package was missing from the released tree.**
+  `.gitignore` contained the *unanchored* pattern `data/`, which matches
+  `src/dagnese_fno/data/` just as well as the dataset folder, so `git add -A`
+  silently skipped the whole sub-package: in v1.1.0 a fresh clone raised
+  `ModuleNotFoundError: No module named 'dagnese_fno.data'` on
+  `import dagnese_fno`, i.e. the published code did not import (CI red on
+  Python 3.10/3.11/3.12).  The package is restored — `masks.py`, `darcy.py`,
+  `meshes.py` — and the ignore patterns are now anchored (`/data/*.pt`), so the
+  dataset binaries stay out of git while the package, the dataset sidecars
+  (`data/*.json`) and `data/manifest.json` are tracked.
+- **Datasets are regenerated, and regeneration is now verifiable.** Because the
+  binary data was never committed, the v1.1.0 numbers could not be reproduced
+  from the repository.  `generate_dataset` is a pure function of
+  `(domain, n, n_samples, seed, n_modes, contrast, forcing)` and `torch.save` is
+  byte-deterministic, so a regenerated dataset has the same SHA-256 as the
+  original (`data/*.json` records it, and every run JSON now carries the
+  `data_sha` of the dataset it was trained on); the benchmark tables in
+  `results/repro` were re-run against the regenerated data.
+
+### Added
+
+- `dagnese_fno.evaluation.statistics`: paired inference for benchmark tables —
+  mean difference with a Student-t *and* a percentile-bootstrap interval, paired
+  *t*-test and exact Wilcoxon signed-rank test, `summarise`, `format_pm`,
+  `significance_stars`.  Pairing keeps the pairs aligned (a missing member drops
+  the pair instead of shifting the seeds).
+- `dagnese_fno.utils.provenance`: git commit/dirty flag, streamed SHA-256 of the
+  dataset and of the saved tensors; every run JSON now records
+  `provenance`, `dataset`, `data_sha`, `git_commit`, `git_dirty`.
+- `scripts/run_benchmark.py --consolidate-only` writes `CONSOLIDATED.json` with
+  per-domain **and pooled** paired tests against the FNO baseline, and
+  `table.md` / `table.tex` gained a paired-difference panel with significance
+  stars.
+- 35 new tests (`tests/test_statistics.py`, `tests/test_provenance.py`):
+  calibration of both intervals (measured coverage of the 95% Student-t interval
+  at n = 6/12/25, documented under-coverage of the bootstrap at small n),
+  alignment of the pairs, bitwise reproducibility of the data pipeline.
+
+### Changed
+
+- `max_gradient_norm` (the `kappa` of pointwise conditioning) is now measured on
+  the cells whose forward stencil is entirely active: one-sided differences in
+  the boundary layer mix the permeability with the constant fill value used
+  outside the mask.  Measured `kappa` is therefore ~40 instead of ~3e2, and
+  `docs/THEORY.md` P3 is updated accordingly (the conclusion — a pointwise
+  certificate would need `L < 1/kappa ~ 0.025` — is unchanged).
 
 ## [1.1.0] -- 2026-10-17
 

@@ -26,7 +26,7 @@ Quick start
 
 from __future__ import annotations
 
-from . import data, geometry, losses, metrics, models, training, utils
+from . import data, evaluation, geometry, losses, metrics, models, training, utils
 from .geometry import (
     DagneseTriangularChart,
     certified_det_lower_bound,
@@ -52,7 +52,7 @@ from .losses import (
 from .metrics import relative_H1, relative_h1, relative_l2
 from .models import DagneseChartOperator, DiffeomorphicMap, DIFFNO2d, FNO2d, build_model
 from .training import TrainConfig, train_one
-from .utils import describe_environment, set_seed
+from .utils import describe_environment, provenance_block, set_seed
 
 __version__ = "1.1.0"
 __author__ = "Giovanni D'Agnese"
@@ -60,7 +60,8 @@ __email__ = "jovannidagnese2@gmail.com"
 
 __all__ = [
     # sub-packages
-    "data", "geometry", "losses", "metrics", "models", "training", "utils",
+    "data", "evaluation", "geometry", "losses", "metrics", "models",
+    "training", "utils",
     # models
     "FNO2d", "DIFFNO2d", "DagneseChartOperator", "DiffeomorphicMap", "build_model",
     # losses
@@ -77,5 +78,5 @@ __all__ = [
     # training
     "TrainConfig", "train_one",
     # utils
-    "set_seed", "describe_environment",
+    "set_seed", "describe_environment", "provenance_block",
 ]

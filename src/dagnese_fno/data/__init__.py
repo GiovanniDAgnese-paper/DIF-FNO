@@ -1,37 +1,80 @@
-"""Data: computational domains, the Darcy reference solver and the datasets.
+"""Data generation for the benchmark: masks, Darcy solver, body-fitted meshes.
 
-This package was missing from the 1.1.0 release (``.gitignore`` contained the
-pattern ``data/``, which silently excluded ``src/dagnese_fno/data/`` from the
-repository, so ``import dagnese_fno`` failed for every user).  It is restored
-here, together with the tests that cover it.
+The three sub-modules are independent:
+
+* :mod:`dagnese_fno.data.masks` -- the four non-convex domains and the registry
+  :data:`~dagnese_fno.data.masks.DOMAINS` that drives everything else;
+* :mod:`dagnese_fno.data.darcy` -- the log-normal permeability sampler, the
+  5-point finite-volume solver and the ``(a, u)`` dataset generator;
+* :mod:`dagnese_fno.data.meshes` -- the two-block body-fitted H-grid around a
+  NACA 0012 (the geometry the paper is motivated by).
+
+Typical use::
+
+    from dagnese_fno.data import generate_dataset, save_dataset, load_dataset
+
+    data = generate_dataset("annulus", n=64, n_samples=100, seed=2)
+    save_dataset(data, "data/darcy_annulus.pt")
+    coeffs, targets, mask = load_dataset("data/darcy_annulus.pt").values()
 """
 
-from .darcy import assemble_darcy, interior_mask, sample_coeff_field, solve_darcy
-from .dataset import dataset_path, generate_dataset, load_dataset, reference_coords, save_dataset
+from __future__ import annotations
+
+from .darcy import (
+    assemble_darcy,
+    generate_dataset,
+    load_dataset,
+    sample_coeff_field,
+    save_dataset,
+    solve_darcy,
+)
 from .masks import (
     DOMAINS,
     DomainSpec,
     annulus_mask,
     clear_frame,
     get_mask,
-    double_hole_mask,
+    grid_2d,
     lshape_mask,
     mask_summary,
+    double_hole_mask,
     naca0012_mask,
-    naca0012_thickness,
     slit_mask,
     star_mask,
-    unit_coordinates,
+)
+from .meshes import (
+    NACA_THICKNESS_RATIO,
+    generate_dagnese_naca0012_mesh,
+    naca0012_grid_spacing,
+    naca0012_surface,
+    naca0012_thickness,
 )
 
 __all__ = [
     # masks
-    "DOMAINS", "DomainSpec", "get_mask", "clear_frame", "mask_summary",
-    "star_mask", "lshape_mask", "annulus_mask", "naca0012_mask",
-    "naca0012_thickness", "slit_mask", "double_hole_mask", "unit_coordinates",
-    # solver
-    "assemble_darcy", "solve_darcy", "sample_coeff_field", "interior_mask",
-    # datasets
-    "generate_dataset", "save_dataset", "load_dataset", "reference_coords",
-    "dataset_path",
+    "DOMAINS",
+    "DomainSpec",
+    "annulus_mask",
+    "clear_frame",
+    "get_mask",
+    "grid_2d",
+    "lshape_mask",
+    "mask_summary",
+    "naca0012_mask",
+    "slit_mask",
+    "double_hole_mask",
+    "star_mask",
+    # darcy
+    "assemble_darcy",
+    "generate_dataset",
+    "load_dataset",
+    "sample_coeff_field",
+    "save_dataset",
+    "solve_darcy",
+    # meshes
+    "NACA_THICKNESS_RATIO",
+    "generate_dagnese_naca0012_mesh",
+    "naca0012_grid_spacing",
+    "naca0012_surface",
+    "naca0012_thickness",
 ]

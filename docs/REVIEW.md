@@ -96,7 +96,7 @@ splits a document must be followed by a structural diff.
 |---|---|---|
 | "0.00 % grid folding with the D'Agnese barrier" (v1 README headline) | **soft penalty, not a guarantee**; the v4 configuration deformed the grid by 1.5 % of the domain | "the barrier makes folding expensive; only the chart makes it impossible" |
 | "certified `det J > 0`" for the barrier configurations | the reported certificate is `0.0` — there is none | the certificate is reported per configuration; `0` means "no certificate" |
-| "the diffeomorphism improves accuracy" (v1: asserted, no evidence) | v1 had the sign right and the evidence absent. On the 18-run, 6-geometry v2 benchmark the effect holds: `dL2 = -0.0182` (p = 4e-4, 16/18 runs, 6/6 geometries), `dH1 = -0.0413` (p < 1e-4), and — the part that makes it a result rather than a correlation — the *same chart without the equidistribution loss* improves only 11/18 (`dL2 = -0.0108`, p = 0.010), so the ablation `eq - chart` is `-0.0073` at p = 4e-4 over 17/18 runs | "measured, with caveats" (§4 of the README, §6 of the paper): pooled test, domain-level sign test (6/6, p = 0.016), the two losing runs, and the near-degenerate `min det J = 0.033` are all printed |
+| "the diffeomorphism improves accuracy" (v1: asserted, no evidence) | **still unproven, and now measured on the canonical data**: the pooled paired difference is `-0.0004` with a 95 % CI of `[-0.018, +0.017]` over 18 runs on 6 geometries. An earlier version of this branch claimed `-8.6 %` (p = 4e-4); those runs were produced by a *superseded* data module (different masks and a rougher coefficient spectrum) and were discarded when the branch was merged with `main`, whose data package is now canonical. The claim is retracted, not softened | "the guarantee is free in accuracy", never "the chart is more accurate"; §4 of the README and §6 of the paper print the null with its interval |
 | "equidistribution improves the representation" | true for feature-dominated fields, **false** otherwise | the negative row (0.54×) is in the paper |
 | "the certificate is tight" | a trained chart has `min det J ≈ 0.8`; the bound is `10⁻⁶` | the bound is a worst case over all parameter values, and is reported as such |
 
@@ -124,12 +124,13 @@ splits a document must be followed by a structural diff.
    and the paper reports the full protocol, the per-run values and the two
    tests.  The measured effect (5.3 % L2, 7.0 % H1) is modest *because* the
    protocol is small: we would not extrapolate it to a leaderboard.
-5. **"Seed noise swamps the differences."**  Per seed it nearly does: the spread
-   (sd ≈ 0.018) is as large as the mean effect.  That is why the statistic is
-   *paired*, why sixteen of eighteen runs must be negative before we say
-   anything, and why the ablation — which holds the architecture, the seed and
-   the budget fixed and changes only the loss — is the load-bearing evidence.
-   Two runs are not negative, and they are in the table.
+5. **"Seed noise swamps the differences."**  It does: the per-seed spread
+   (sd ≈ 0.035) is *two orders of magnitude* larger than the pooled mean
+   (−0.0004) and larger than the interval we can resolve (±0.018).  The star on
+   its own spans 0.22–0.31 across three seeds, which is why its paired CI is
+   [−0.22, +0.24] and why we report the interval instead of a p-value for it.
+   This is the honest reading of the benchmark, and it is why the paper's claim
+   is about folding, not about accuracy.
 6. **"Equidistribution is not the right objective for PDE error."**  Agreed, and
    demonstrated (row 3 of the P7 table).  The loss is auxiliary; the paper claims
    a *bound on a representation error*, not a lower PDE error.

@@ -20,8 +20,9 @@ Three separate problems, in increasing order of severity:
    but by making folding unattractive, not impossible.
 2. **The certified variant shrinks the class.** The only v1 *theorem*
    ($\det J\ge(1-\kappa L)^2$) requires $\mathrm{Lip}(r)\le L$ with
-   $\kappa L<1$. With pointwise conditioning $\kappa\approx 3\cdot10^{2}$, so
-   $L<3\cdot10^{-3}$: the map is confined to an infinitesimal neighbourhood of
+   $\kappa L<1$. With pointwise conditioning the measured
+   $\kappa=\sqrt{1+\max\|\nabla a\|^2}\approx 4\cdot10^{1}$ (THEORY P3), so
+   $L<2.5\cdot10^{-2}$: the map is confined to an infinitesimal neighbourhood of
    the identity.  The v1 certified runs deform the grid by $0.28$–$0.49$ only
    because they use *global* conditioning, and even then the certificate
    $(1-L)^2\in[0.42,0.52]$ is obtained by capping the residual's Lipschitz
@@ -142,33 +143,47 @@ DAO $\approx68$ s on two threads.
    also covered, but a genuinely two-dimensional coupling (checkerboard) is not
    implemented.
 
+
 ---
 
-## 6. Why six geometries, and why the ablation is the load-bearing run
+## 6. What the benchmark actually says, and what it cost to learn it
 
-The first version of the benchmark had four geometries and twelve paired runs.
-The pooled paired test gave `p = 0.027` for `chart-eq`, but the runs are *nested*
-in geometries: four independent units, four of four negative, sign test
-`p = 0.0625`. That is a result you cannot defend at a conference, and no amount
-of extra seeds fixes it — seeds are not independent units either, they share the
-geometry.
+Three versions of the same benchmark have existed on this branch, and the honest
+record matters more than the final number.
 
-Two more geometries (a **crack** — a thin slit from the wall with a singular tip
-— and a **plate with two circular holes** — multiply connected, two obstacles)
-were added for exactly that reason: six of six negative means gives a sign test
-of `p = 0.0156`, and the two new geometries turned out to carry the largest and
-tightest effects (`-0.031 ± 0.018` and `-0.034 ± 0.005`).
+1. **Four geometries, twelve paired runs.** Pooled difference for the
+   equidistributing chart: `-0.0110` (p = 0.027). But the runs are *nested* in
+   geometries: four independent units, four of four negative, sign test
+   p = 0.0625. Undefensible at a conference, and extra seeds do not fix it (seeds
+   are not independent units either).
+2. **Six geometries, eighteen runs, on the branch's own data module.** Two more
+   domains (a crack, a plate with two holes) gave 6/6 negative means
+   (p = 0.0156) and a pooled `-0.0182` (p = 4e-4), with the ablation
+   `eq - chart` at `-0.0073` over 17 of 18 runs.
+3. **The same six geometries on `main`'s data package, after the merge.** The
+   effect disappears: `-0.0004`, 95 % CI `[-0.018, +0.017]`, 10/18 improving,
+   3/6 geometry means negative.
 
-The second design decision: the headline comparison (`chart-eq` vs FNO) is *not*
-the experiment that identifies the mechanism, because the chart adds parameters,
-changes the input parameterisation and changes the sampling. The identifying
-experiment is `chart-eq` vs `chart-fixed`: identical architecture, identical
-parameter count, identical seed, identical budget, and the only difference is the
-equidistribution term. That comparison is `-0.0073` in L2 (`p = 4e-4`, 17 of 18
-runs) and `-0.0211` in H1 (18 of 18). It is printed as a row *inside* the paired
-table, so a reader cannot see the headline without seeing the ablation.
+Version 3 is what this repository reports, because `main`'s data package is the
+canonical one: it ships SHA-256 sidecars, a bitwise-reproducible generator and
+its own tests, and the regenerated datasets match those hashes exactly. The
+numbers in version 2 came from masks with different geometry and a coefficient
+spectrum with heavier tails (`|k|^{-1.5}` rather than `(k^2+l^2)^{-2}`), i.e. from
+data whose solutions *have layers*. Version 2 was not wrong about its own data;
+it was wrong to call that data "the benchmark".
 
-Known weakness, stated rather than hidden: `λ_eq = 10` drives the learned chart
-to `min det J ≈ 0.033` on four of the six geometries. Nothing folds (the floor is
-`ε²`), but a cap on the term, or a penalty on the log-determinant, is the natural
-next regularisation, and the honest statement is that we have not implemented it.
+**Why the effect vanishes in version 3 — and why that is a result.** The learned
+chart barely moves on the canonical data (`min det J` = 0.95 on the star, 0.32 on
+the L-shape, 0.45 on the airfoil), against 0.04 on the layer-dominated data of
+version 2. The gradient monitor of a log-normal coefficient is dominated by the
+jump at the mask boundary, and a smooth Darcy solution has no layer for a mesh to
+resolve. This is the negative row of P7 (smooth field: 0.54x, i.e. *worse*)
+reappearing in the PDE benchmark: equidistribution is not a universal improver,
+and the theory never said it was.
+
+**What survives, and is worth publishing.** The guarantee: 0.00 % folded cells,
+`min det J >= 0.321`, a positive certified bound (`>= 0.204`) and an
+exact-inverse error `<= 3.6e-7` on all 54 runs, at +0.5 % parameters and x2.8
+wall clock. The v1 penalty buys the same accuracy and folds 12-22 % of its cells.
+The trade is "the guarantee is free in accuracy", not "the chart is more
+accurate" — and the second claim is the one we removed from the paper.
