@@ -1,0 +1,57 @@
+{
+  "coefficient": "a = exp(contrast * a_hat), a_hat = truncated sine series, Gaussian coefficients with 1/(k^2+l^2)^2 variance, max|a_hat| = 1",
+  "contrast": 2.0,
+  "description": "5-lobed star: smooth boundary, strongly non-convex",
+  "discretisation": "5-point finite volume, arithmetic face averaging, h = 2/(n-1)",
+  "domain": "star",
+  "file": "darcy_star.pt",
+  "fill_fraction": 0.15966796875,
+  "forcing": 1.0,
+  "generator": "dagnese_fno.data.generate_dataset",
+  "mask_summary": {
+    "bbox_cells": [
+      13,
+      55,
+      9,
+      54
+    ],
+    "fill_fraction": 0.15966796875,
+    "n_active": 654,
+    "n_cells": 4096,
+    "n_components": 1,
+    "n_holes": 0,
+    "shape": [
+      64,
+      64
+    ]
+  },
+  "n": 64,
+  "n_modes": 6,
+  "n_samples": 100,
+  "pde": "-div(a grad u) = f on the active cells, u = 0 on the inactive layer",
+  "seed": 0,
+  "sha256": "e54061eb7eebf5bdba60521838a9811b82389cb3683b7b3374ab2d58beca2064",
+  "shapes": {
+    "coeffs": [
+      100,
+      64,
+      64
+    ],
+    "coords": [
+      64,
+      64,
+      2
+    ],
+    "mask": [
+      64,
+      64
+    ],
+    "targets": [
+      100,
+      64,
+      64
+    ]
+  },
+  "simply_connected": true,
+  "spacing": 0.031746031746031744
+}

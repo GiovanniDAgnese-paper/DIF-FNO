@@ -4,6 +4,57 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.org/en/1.1.0/) and the project uses
 semantic versioning.
 
+## [1.1.1] -- 2026-10-17
+
+### Fixed
+
+- **The `dagnese_fno.data` sub-package was missing from the released tree.**
+  `.gitignore` contained the *unanchored* pattern `data/`, which matches
+  `src/dagnese_fno/data/` just as well as the dataset folder, so `git add -A`
+  silently skipped the whole sub-package: in v1.1.0 a fresh clone raised
+  `ModuleNotFoundError: No module named 'dagnese_fno.data'` on
+  `import dagnese_fno`, i.e. the published code did not import (CI red on
+  Python 3.10/3.11/3.12).  The package is restored — `masks.py`, `darcy.py`,
+  `meshes.py` — and the ignore patterns are now anchored (`/data/*.pt`), so the
+  dataset binaries stay out of git while the package, the dataset sidecars
+  (`data/*.json`) and `data/manifest.json` are tracked.
+- **Datasets are regenerated, and regeneration is now verifiable.** Because the
+  binary data was never committed, the v1.1.0 numbers could not be reproduced
+  from the repository.  `generate_dataset` is a pure function of
+  `(domain, n, n_samples, seed, n_modes, contrast, forcing)` and `torch.save` is
+  byte-deterministic, so a regenerated dataset has the same SHA-256 as the
+  original (`data/*.json` records it, and every run JSON now carries the
+  `data_sha` of the dataset it was trained on); the benchmark tables in
+  `results/repro` were re-run against the regenerated data.
+
+### Added
+
+- `dagnese_fno.evaluation.statistics`: paired inference for benchmark tables —
+  mean difference with a Student-t *and* a percentile-bootstrap interval, paired
+  *t*-test and exact Wilcoxon signed-rank test, `summarise`, `format_pm`,
+  `significance_stars`.  Pairing keeps the pairs aligned (a missing member drops
+  the pair instead of shifting the seeds).
+- `dagnese_fno.utils.provenance`: git commit/dirty flag, streamed SHA-256 of the
+  dataset and of the saved tensors; every run JSON now records
+  `provenance`, `dataset`, `data_sha`, `git_commit`, `git_dirty`.
+- `scripts/run_benchmark.py --consolidate-only` writes `CONSOLIDATED.json` with
+  per-domain **and pooled** paired tests against the FNO baseline, and
+  `table.md` / `table.tex` gained a paired-difference panel with significance
+  stars.
+- 35 new tests (`tests/test_statistics.py`, `tests/test_provenance.py`):
+  calibration of both intervals (measured coverage of the 95% Student-t interval
+  at n = 6/12/25, documented under-coverage of the bootstrap at small n),
+  alignment of the pairs, bitwise reproducibility of the data pipeline.
+
+### Changed
+
+- `max_gradient_norm` (the `kappa` of pointwise conditioning) is now measured on
+  the cells whose forward stencil is entirely active: one-sided differences in
+  the boundary layer mix the permeability with the constant fill value used
+  outside the mask.  Measured `kappa` is therefore ~40 instead of ~3e2, and
+  `docs/THEORY.md` P3 is updated accordingly (the conclusion — a pointwise
+  certificate would need `L < 1/kappa ~ 0.025` — is unchanged).
+
 ## [1.1.0] -- 2026-10-17
 
 A full re-engineering of the repository around three goals: make the

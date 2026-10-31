@@ -33,7 +33,7 @@ from ..geometry import (
 from ..losses import DiffeomorphicOperatorLoss
 from ..metrics import relative_H1, relative_h1, relative_l2
 from ..models import build_model
-from ..utils import describe_environment, set_seed
+from ..utils import describe_environment, provenance_block, set_seed
 
 __all__ = ["TrainConfig", "train_one", "max_gradient_norm"]
 
@@ -118,14 +118,27 @@ class TrainConfig:
 
 
 def max_gradient_norm(coeffs: torch.Tensor, mask: torch.Tensor, spacing: float) -> float:
-    """:math:`\\max\\|\\nabla a\\|` over the dataset -- the :math:`\\kappa` of pointwise conditioning."""
+    """:math:`\\max\\|\\nabla a\\|` over the dataset -- the :math:`\\kappa` of pointwise conditioning.
+
+    The maximum is taken over the cells whose *forward* stencil is entirely
+    active.  In the boundary layer one of the two one-sided differences mixes
+    the physical permeability with the constant fill value used outside the
+    mask; that artificial jump is not a property of :math:`a` and would
+    otherwise dominate :math:`\\kappa` (and hence loosen the certificate).
+    """
     gy = torch.zeros_like(coeffs)
     gx = torch.zeros_like(coeffs)
-    gy[:, :-1, :] = (coeffs[:, 1:, :] - coeffs[:, :-1, :]) / spacing
-    gx[:, :, :-1] = (coeffs[:, :, 1:] - coeffs[:, :, :-1]) / spacing
+    gy[..., :-1, :] = (coeffs[..., 1:, :] - coeffs[..., :-1, :]) / spacing
+    gx[..., :, :-1] = (coeffs[..., :, 1:] - coeffs[..., :, :-1]) / spacing
     g = (gy ** 2 + gx ** 2).sqrt()
-    m = mask.to(torch.bool).reshape(1, *mask.shape).expand_as(g)
-    return float(g[m].max())
+    m = mask.to(torch.bool)
+    if m.shape != g.shape:
+        m = m.reshape((1,) * (g.ndim - m.ndim) + tuple(m.shape)).expand_as(g)
+    valid = torch.zeros_like(m)
+    valid[..., :-1, :-1] = m[..., :-1, :-1] & m[..., 1:, :-1] & m[..., :-1, 1:]
+    if not bool(valid.any()):                      # pragma: no cover - degenerate mask
+        return float(g[m].max()) if bool(m.any()) else 0.0
+    return float(g[valid].max())
 
 
 # --------------------------------------------------------------------------- #
@@ -142,6 +155,7 @@ def train_one(cfg: TrainConfig, verbose: bool = True) -> dict:
 
     # ---------------- data ---------------- #
     path = Path(cfg.data_dir) / f"darcy_{cfg.domain}.pt"
+    provenance = provenance_block(path)
     if not path.exists():
         raise FileNotFoundError(
             f"dataset not found: {path}. Generate it with "
@@ -315,7 +329,11 @@ def train_one(cfg: TrainConfig, verbose: bool = True) -> dict:
         "n_params": int(sum(p.numel() for p in model.parameters() if p.requires_grad)),
         "wall_time_s": time.time() - t_start,
         "environment": describe_environment(),
-        "data_sha": None,
+        "provenance": provenance,
+        "dataset": str(path),
+        "data_sha": provenance.get("dataset_sha256"),
+        "git_commit": provenance.get("git_commit"),
+        "git_dirty": provenance.get("git_dirty"),
         "kappa": kappa if cfg.is_diffeomorphic else None,
         "grid_spacing": spacing,
     }

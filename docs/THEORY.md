@@ -130,13 +130,18 @@ by $1/\varepsilon$.
   $\|D\|_2 = \sqrt{1 + \|\nabla a\|^2}$ and one must take
   $\kappa = \sqrt{1 + \max_\xi \|\nabla a(\xi)\|^2}$.
 
-  **This matters:** for the log-normal coefficients used in the benchmark
-  ($a \in [e^{-2}, e^{2}]$ varying on a grid with $h = 2/63$) the measured
-  $\max\|\nabla a\|$ is of order $10^2$, hence $\kappa \approx 3\cdot 10^2$ and a
-  certificate would require $L < 3\cdot10^{-3}$ — i.e. a *provably*
-  folding-free pointwise map can only be an infinitesimal perturbation of the
-  identity.  Global conditioning removes that obstruction ($\kappa = 1$) and is
-  the configuration used by the `dif-certified` variant.
+  **This matters:** for the log-normal coefficients of the benchmark
+  ($a \in [e^{-2}, e^{2}]$, $h = 2/63$, contrast $\gamma = 2$) the measured
+  $\max\|\nabla a\|$ is $35$–$41$ (star $40.9$, L-shape $36.1$, annulus $38.2$,
+  NACA 0012 $35.0$), hence $\kappa \approx 4\cdot 10^{1}$: a pointwise
+  certificate would require $L < 1/\kappa \approx 0.025$ — a *provably*
+  folding-free pointwise map can only be a small perturbation of the identity.
+  (The maximum is taken over the cells whose forward stencil is entirely active:
+  one-sided differences in the boundary layer mix $a$ with the constant fill
+  value used outside the mask, which is an artefact of the discretisation
+  rather than a property of the permeability.)  Global conditioning removes the
+  obstruction altogether ($\kappa = 1$) and is the configuration used by the
+  `dif-certified` variant.
 
 Tests: `test_spectral_mode_enforces_the_lipschitz_bound`,
 `test_lipschitz_bound_survives_training`,
