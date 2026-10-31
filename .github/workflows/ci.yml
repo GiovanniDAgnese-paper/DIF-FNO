@@ -56,9 +56,23 @@ jobs:
           pip install -e .
       - name: Generate a tiny dataset
         run: python scripts/generate_data.py --domains star --n 32 --samples 8 --out data
-      - name: Train 2 epochs (baseline and DIF-FNO)
+      - name: Train 2 epochs (baseline, DIF-FNO v1, chart operator)
         run: |
           python scripts/train.py --domain star --model fno --epochs 2 --data-dir data --width 8 --modes1 4 --modes2 4
           python scripts/train.py --domain star --model dif --epochs 2 --data-dir data --width 8 --modes1 4 --modes2 4 --lambda-barrier 1
           python scripts/train.py --domain star --model dif --epochs 2 --data-dir data --width 8 --modes1 4 --modes2 4 \
             --lipschitz-mode spectral --conditioning global --deformation-scale 0.5
+          python scripts/train.py --domain star --model chart --epochs 2 --data-dir data --width 8 --modes1 4 --modes2 4 --lambda-eq 10
+          python scripts/train.py --domain star --model chart --epochs 2 --data-dir data --width 8 --modes1 4 --modes2 4 \
+            --chart-conditioning global --latent-dim 4 --lambda-eq 10
+
+      - name: Deterministic verification of P5-P8
+        run: python scripts/run_chart_study.py --quick --out /tmp/study --figures /tmp/study-figs
+
+      - name: The committed tables are reproducible from the committed runs
+        # Regenerate the paper's tables from results/v2/*.json and fail if they
+        # differ from what is checked in: the paper's numbers cannot drift.
+        run: |
+          python scripts/make_paper_table.py --figure /tmp/fig
+          python scripts/report_stats.py --results results/v2 --out /tmp/STATS.json
+          git diff --exit-code paper/tables/benchmark.tex results/v2/TABLE.md

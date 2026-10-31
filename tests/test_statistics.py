@@ -15,6 +15,7 @@ from dagnese_fno.evaluation import (
     format_pm,
     mean_ci,
     paired_test,
+    sign_test,
     significance_stars,
     summarise,
     t_interval,
@@ -200,3 +201,27 @@ def test_format_pm():
     assert format_pm(-0.0012, 0.0003, plus=True) == "-0.0012 ± 0.0003"
     assert format_pm(float("nan")) == "--"
     assert format_pm(1.0, float("nan")) == "1.0000"
+
+
+# --------------------------------------------------------------------------- #
+# sign_test
+# --------------------------------------------------------------------------- #
+def test_sign_test_is_exact_for_small_n():
+    # six groups, all improving: 2**-6, the number the paper quotes
+    assert sign_test(6, 6) == pytest.approx(2.0 ** -6)
+    assert sign_test(4, 4) == pytest.approx(2.0 ** -4)
+    # P(X >= 3) = (20 + 15 + 6 + 1) / 64 = 42/64 for X ~ Binomial(6, 1/2)
+    assert sign_test(3, 6) == pytest.approx(42 / 64)
+
+
+def test_sign_test_edge_cases():
+    assert sign_test(0, 6) == 1.0
+    assert sign_test(-1, 6) == 1.0
+    assert sign_test(7, 6) == 0.0
+    assert np.isnan(sign_test(1, 0))
+
+
+def test_sign_test_needs_more_than_half():
+    """A single dissenting group must destroy the evidence at n = 6."""
+    assert sign_test(5, 6) > 0.05
+    assert sign_test(6, 6) < 0.05

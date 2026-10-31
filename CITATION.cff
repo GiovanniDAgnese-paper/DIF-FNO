@@ -1,19 +1,25 @@
 cff-version: 1.2.0
-message: "If you use D'Agnese DIF-FNO or the D'Agnese Topological Barrier Loss, please cite it as below."
-title: "D'Agnese DIF-FNO: Diffeomorphic Implicit Fourier Neural Operators with Topological Guarantees on Non-Convex Domains"
+message: "If you use the D'Agnese Chart Operator, the D'Agnese Equidistribution Loss or DIF-FNO, please cite it as below."
+title: "The D'Agnese Chart Operator: Certified, Exactly Invertible, Adaptively Learned Charts for Neural Operators"
 abstract: >-
-  DIF-FNO is a Fourier Neural Operator preceded by a learnable, input-conditioned
-  diffeomorphic coordinate map. Grid folding (non-positive Jacobian determinant)
-  is discouraged by the D'Agnese softplus barrier loss and -- in the
-  Lipschitz-constrained variant -- provably excluded by a spectral-norm
-  certificate that guarantees det(J_phi) >= (1 - kappa*L)^2 > 0.
+  A Fourier neural operator evaluated on a certified chart. The D'Agnese
+  triangular chart is a constructive diffeomorphism of the reference square
+  built from strictly positive increments, so global injectivity, a positive
+  Jacobian determinant (computed as a product of positive factors), a
+  closed-form inverse at arbitrary points and the parameter-free bound
+  det(J) >= eps^2 > 0 hold for every parameter value. The D'Agnese
+  Equidistribution Loss gives the chart a classical objective: it vanishes
+  exactly on equidistributing meshes, is scale free, and minimises a certified
+  upper bound on the representation error at fixed resolution. The repository
+  also keeps the DIF-FNO v1 line (softplus barrier and Lipschitz-certified
+  deformation) as the ablation that motivates the construction.
 authors:
   - family-names: "D'Agnese"
     given-names: "Giovanni"
     email: "jovannidagnese2@gmail.com"
-version: 1.1.0
+version: 1.2.0
 doi: 10.5281/zenodo.22814077
-date-released: "2026-10-17"
+date-released: "2026-10-31"
 license: MIT
 repository-code: "https://github.com/GiovanniDAgnese-paper/DIF-FNO"
 url: "https://doi.org/10.5281/zenodo.22814077"
@@ -21,7 +27,10 @@ keywords:
   - neural operator
   - fourier neural operator
   - diffeomorphism
-  - topology preservation
+  - certified invertibility
+  - adaptive mesh
+  - equidistribution
+  - moving mesh
   - scientific machine learning
   - darcy flow
   - non-convex domains
