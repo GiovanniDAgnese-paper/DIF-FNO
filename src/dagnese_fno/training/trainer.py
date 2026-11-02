@@ -31,7 +31,7 @@ from ..geometry import (
     jacobian_det,
 )
 from ..geometry.transport import sample_field
-from ..losses import DiffeomorphicOperatorLoss, DagneseEquidistributionLoss
+from ..losses import DagneseEquidistributionLoss, DiffeomorphicOperatorLoss
 from ..metrics import relative_H1, relative_h1, relative_l2
 from ..models import build_model
 from ..utils import describe_environment, provenance_block, set_seed

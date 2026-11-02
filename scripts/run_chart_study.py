@@ -49,15 +49,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import torch  # noqa: E402
 
-from dagnese_fno.losses import DagneseEquidistributionLoss  # noqa: E402
 from dagnese_fno.geometry import (  # noqa: E402
     DagneseTriangularChart,
-    sample_field,
     convergence_rate,
     pullback,
     pushforward,
     sample_field,
 )
+from dagnese_fno.losses import DagneseEquidistributionLoss  # noqa: E402
 
 torch.set_default_dtype(torch.float32)
 
@@ -122,21 +121,14 @@ def equidistributed_axis(monitor_1d: torch.Tensor, n: int) -> torch.Tensor:
 
 def bilinear_from_grid(fine: torch.Tensor, nodes_x: torch.Tensor, nodes_y: torch.Tensor) -> torch.Tensor:
     """Values of ``fine`` at the tensor-product nodes (exact bilinear sampling)."""
-    n = fine.shape[0]
-    t = torch.linspace(-1.0, 1.0, n, dtype=fine.dtype)
-    out = torch.empty(nodes_x.numel(), nodes_y.numel(), dtype=fine.dtype)
-    for axis, nodes in ((0, nodes_x), (1, nodes_y)):
-        pass
     # separable interpolation: first along axis 0, then along axis 1
     out = _interp_axis(fine, nodes_x, axis=0)
     out = _interp_axis(out.transpose(0, 1), nodes_y, axis=0).transpose(0, 1)
-    _ = (n, t)
     return out
 
 
 def _interp_axis(f: torch.Tensor, nodes: torch.Tensor, axis: int) -> torch.Tensor:
     n = f.shape[axis]
-    t = torch.linspace(-1.0, 1.0, n, dtype=f.dtype)
     pos = (nodes + 1.0) * 0.5 * (n - 1)
     i = pos.floor().clamp(0, n - 2).long()
     frac = (pos - i).to(f.dtype)
@@ -217,7 +209,6 @@ def experiment_p6(resolutions=(32, 64, 128, 256), seed: int = 0) -> dict:
 def experiment_p7(field_kind: str = "ridge", fine: int = 256,
                   nodes=(9, 17, 33, 65)) -> dict:
     f = field_with_feature(fine, field_kind)
-    coords = grid(fine, dtype=f.dtype)
     mon = monitor_of(f)
     # separable (tensor-product) equidistribution: marginals of the monitor
     m_x = mon.sum(dim=1)

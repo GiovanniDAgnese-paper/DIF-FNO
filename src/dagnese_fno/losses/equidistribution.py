@@ -69,7 +69,7 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
-from ..geometry.jacobian import Spacing, _as_spacing_pair, derivative
+from ..geometry.jacobian import _as_spacing_pair, derivative
 
 __all__ = ["DagneseEquidistributionLoss", "gradient_monitor"]
 

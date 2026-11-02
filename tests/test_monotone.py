@@ -290,7 +290,6 @@ def test_bad_inputs_are_rejected():
 # --------------------------------------------------------------------------- #
 def test_inverse_at_agrees_with_inverse_on_the_grid():
     n = 24
-    coords = grid(n) if "grid" in globals() else None
     t = torch.linspace(-1.0, 1.0, n)
     coords = torch.stack(torch.meshgrid(t, t, indexing="ij"), dim=-1)
     chart = DagneseTriangularChart(hidden=16, n_fourier=2)

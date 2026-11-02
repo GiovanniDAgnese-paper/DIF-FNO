@@ -95,7 +95,7 @@ def paired(runs: list[dict], variant: str, domain: str, field: str,
     for r in runs:
         by_seed.setdefault(r["seed"], {})[r["variant"]] = r["final"]
     diffs = []
-    for seed, per_variant in by_seed.items():
+    for per_variant in by_seed.values():
         a, b = per_variant.get(variant), per_variant.get(ref)
         if not a or not b:
             continue
@@ -117,7 +117,7 @@ def paired_by_domain(runs: list[dict], variant: str, domain: str, field: str,
             continue
         by_seed.setdefault(r["seed"], {})[r["variant"]] = r["final"]
     diffs = []
-    for seed, per in by_seed.items():
+    for per in by_seed.values():
         a, b = per.get(variant), per.get(ref)
         if not a or not b or a.get(field) is None or b.get(field) is None:
             continue
@@ -149,7 +149,7 @@ def pooled_diff(runs: list[dict], variant: str, domains: list[str], field: str,
             if r["domain"] != d:
                 continue
             by_seed.setdefault(r["seed"], {})[r["variant"]] = r["final"]
-        for seed, per in by_seed.items():
+        for _seed, per in by_seed.items():
             a, b = per.get(variant), per.get(ref)
             if not a or not b or a.get(field) is None or b.get(field) is None:
                 continue
@@ -381,9 +381,9 @@ def markdown_table(summary: dict, runs: list[dict]) -> str:
                 d, v,
                 fmt(e["fold_pct"][0], 2),
                 fmt(e.get("min_detJ", (np.nan,))[0], 3),
-                ("%.2e" % e["certified_det_lower_bound"][0]) if "certified_det_lower_bound" in e else "--",
+                0 if "certified_det_lower_bound" in e else "--",
                 fmt(e.get("kappa", (np.nan,))[0], 2),
-                ("%.1e" % e.get("chart_inverse_error", (np.nan,))[0]) if "chart_inverse_error" in e else "--",
+                f"{e['chart_inverse_error'][0]:.1e}" if "chart_inverse_error" in e else "--",
                 fmt(e.get("eq_residual_pct", (np.nan,))[0], 1),
             ]) + " |")
     partial = incomplete_variants(summary)

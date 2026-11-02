@@ -43,6 +43,7 @@ def test_sample_field_matches_manual_bilinear():
     n = 17
     f = torch.rand(1, n, n, dtype=torch.float64)
     coords = grid(n).to(torch.float64)
+    assert coords.shape == (n, n, 2) and coords[0, 0, 0] == pytest.approx(-1.0)
     # A point in the middle of a cell, compared with an explicit bilinear formula.
     x = torch.tensor([[[0.13, -0.41]]], dtype=torch.float64)
     out = sample_field(f, x)

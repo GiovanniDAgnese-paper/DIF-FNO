@@ -14,7 +14,7 @@ from __future__ import annotations
 import pytest
 import torch
 
-from dagnese_fno.models import FNO2d, DagneseChartOperator, build_model
+from dagnese_fno.models import DagneseChartOperator, FNO2d, build_model
 
 
 def grid(n: int = 24) -> torch.Tensor:
@@ -23,7 +23,7 @@ def grid(n: int = 24) -> torch.Tensor:
 
 
 def make_pair(**kwargs):
-    kw = dict(width=8, modes1=4, modes2=4, fc_channels=16)
+    kw = {"width": 8, "modes1": 4, "modes2": 4, "fc_channels": 16}
     kw.update(kwargs)
     chart_model = DagneseChartOperator(**kw)
     fno = FNO2d(in_channels=3, out_channels=1, **{k: v for k, v in kw.items()

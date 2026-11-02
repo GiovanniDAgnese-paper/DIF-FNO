@@ -213,9 +213,8 @@ class DagneseTriangularChart(nn.Module):
             code_shape = (1,)
         else:
             code_shape = code.shape[:-1]
-        if coords.dim() == 3 and len(code_shape) == 1:
-            if code_shape[0] not in (1,):
-                coords = coords.unsqueeze(0).expand(code_shape[0], *coords.shape)
+        if coords.dim() == 3 and len(code_shape) == 1 and code_shape[0] not in (1,):
+            coords = coords.unsqueeze(0).expand(code_shape[0], *coords.shape)
         return coords
 
     def _features(self, coords: torch.Tensor, code: torch.Tensor | None = None) -> torch.Tensor:
@@ -249,7 +248,6 @@ class DagneseTriangularChart(nn.Module):
                ) -> tuple[torch.Tensor, torch.Tensor]:
         """Row knots ``g`` ``(..., N)`` and column knots ``h`` ``(..., N, N)``."""
         logits = self.nets[layer](self._features(coords, code))
-        n = coords.shape[-2]
         row_logits = logits[..., 0].mean(dim=-1)                      # (..., N)
         col_logits = logits[..., 1]                                   # (..., N, N)
         g_inc = self._positive(row_logits[..., :-1])                  # (..., N-1)
@@ -378,7 +376,6 @@ class DagneseTriangularChart(nn.Module):
         if coords.shape[-1] != 2:
             raise ValueError(f"coords must have last dimension 2, got {coords.shape[-1]}")
         coords = self._align(coords, code)
-        n = coords.shape[-2]
         points = coords
         total = torch.ones(coords.shape[:-1], device=coords.device, dtype=coords.dtype)
         for layer in range(self.n_layers):
