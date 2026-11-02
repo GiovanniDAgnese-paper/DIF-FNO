@@ -13,6 +13,14 @@ from .jacobian import (
     spectral_norm,
     spectral_norm_matrix,
 )
+from .monotone import DagneseTriangularChart, chart_det_consistency, invert_monotone_1d
+from .transport import (
+    convergence_rate,
+    jacobian_weight,
+    pullback,
+    pushforward,
+    sample_field,
+)
 
 __all__ = [
     "certified_det_lower_bound",
@@ -26,4 +34,12 @@ __all__ = [
     "jacobian_singular_values",
     "spectral_norm",
     "spectral_norm_matrix",
+    "DagneseTriangularChart",
+    "invert_monotone_1d",
+    "chart_det_consistency",
+    "sample_field",
+    "pullback",
+    "pushforward",
+    "jacobian_weight",
+    "convergence_rate",
 ]

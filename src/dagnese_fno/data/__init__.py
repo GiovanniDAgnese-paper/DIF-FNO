@@ -33,11 +33,13 @@ from .masks import (
     DomainSpec,
     annulus_mask,
     clear_frame,
+    double_hole_mask,
     get_mask,
     grid_2d,
     lshape_mask,
     mask_summary,
     naca0012_mask,
+    slit_mask,
     star_mask,
 )
 from .meshes import (
@@ -59,6 +61,8 @@ __all__ = [
     "lshape_mask",
     "mask_summary",
     "naca0012_mask",
+    "slit_mask",
+    "double_hole_mask",
     "star_mask",
     # darcy
     "assemble_darcy",

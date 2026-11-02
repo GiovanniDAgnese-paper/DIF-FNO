@@ -24,11 +24,12 @@ confirmatory test at ``n >= 6``.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from math import comb as binom
 
 import numpy as np
 
 __all__ = ["mean_ci", "t_interval", "paired_test", "summarise",
-           "format_pm", "significance_stars"]
+           "sign_test", "format_pm", "significance_stars"]
 
 
 def _clean(values: Sequence[float]) -> np.ndarray:
@@ -140,6 +141,27 @@ def summarise(values: Sequence[float], n_bootstrap: int = 5_000) -> dict:
             "ci_low": float(lo), "ci_high": float(hi),
             "boot_ci_low": float(blo), "boot_ci_high": float(bhi),
             "min": float(x.min()), "max": float(x.max())}
+
+
+def sign_test(k: int, n: int) -> float:
+    """Exact one-sided sign test: ``P(X >= k)`` for ``X ~ Binomial(n, 1/2)``.
+
+    This is the test for the *nested* case the paired tests cannot see: when the
+    runs are grouped by geometry (or by PDE), the independent units are the
+    groups, not the runs, and ``n`` above counts groups.  With six geometries all
+    improving, the exact p-value is ``2**-6 = 0.0156`` -- which is the honest
+    resolution of a comparison whose runs share their geometry.
+
+    Returns ``0.0`` when ``k > n`` and ``1.0`` when ``k <= 0``.
+    """
+    k, n = int(k), int(n)
+    if n < 1:
+        return float("nan")
+    if k <= 0:
+        return 1.0
+    if k > n:
+        return 0.0
+    return sum(binom(n, i) for i in range(k, n + 1)) / 2.0 ** n
 
 
 def format_pm(mean: float, half_width: float | None = None, digits: int = 4,

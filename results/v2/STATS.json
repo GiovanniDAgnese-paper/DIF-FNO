@@ -1,0 +1,232 @@
+{
+  "admissibility": {
+    "chart-eq": {
+      "certified_lb_min": 0.20424631237983704,
+      "fold_pct_max": 0.0,
+      "inverse_error_max": 2.905726432800293e-07,
+      "min_detJ_min": 0.3209865689277649
+    },
+    "chart-fixed": {
+      "certified_lb_min": 0.40187329053878784,
+      "fold_pct_max": 0.0,
+      "inverse_error_max": 3.5762786865234375e-07,
+      "min_detJ_min": 0.4467456638813019
+    }
+  },
+  "domains": [
+    "annulus",
+    "double_hole",
+    "lshape",
+    "naca0012",
+    "slit",
+    "star"
+  ],
+  "n_runs": 54,
+  "reference": "fno",
+  "variants": {
+    "chart-eq": {
+      "rel_h1": {
+        "ci_high": 0.04729291515853287,
+        "ci_low": -0.007476611772904276,
+        "domain_sign_test_p": 0.984375,
+        "domains_negative": 1,
+        "domains_total": 6,
+        "mean": 0.019908151692814298,
+        "mean_of_ratios": 1.0952215042146618,
+        "n": 18,
+        "negative": 8,
+        "p_two_sided": 0.14348040740866372,
+        "per_domain": [
+          {
+            "domain": "annulus",
+            "mean": 0.004714454213778178,
+            "n": 3
+          },
+          {
+            "domain": "double_hole",
+            "mean": 0.026341105500857036,
+            "n": 3
+          },
+          {
+            "domain": "lshape",
+            "mean": 0.0785210852821668,
+            "n": 3
+          },
+          {
+            "domain": "naca0012",
+            "mean": 0.005281964937845866,
+            "n": 3
+          },
+          {
+            "domain": "slit",
+            "mean": -0.003983743488788605,
+            "n": 3
+          },
+          {
+            "domain": "star",
+            "mean": 0.00857404371102651,
+            "n": 3
+          }
+        ],
+        "ratio_of_means": 1.0760062832113466,
+        "sd": 0.055068183640065216,
+        "se": 0.012979695359838738,
+        "stars": "n.s.",
+        "t": 1.5337919065815147,
+        "wilcoxon_p_less": 0.9092674255371094
+      },
+      "rel_l2": {
+        "ci_high": 0.01715317077230033,
+        "ci_low": -0.01786636973543912,
+        "domain_sign_test_p": 0.65625,
+        "domains_negative": 3,
+        "domains_total": 6,
+        "mean": -0.0003565994815693961,
+        "mean_of_ratios": 1.0061361599443017,
+        "n": 18,
+        "negative": 10,
+        "p_two_sided": 0.9662277242407037,
+        "per_domain": [
+          {
+            "domain": "annulus",
+            "mean": -0.005608451863129933,
+            "n": 3
+          },
+          {
+            "domain": "double_hole",
+            "mean": 0.004437214384476344,
+            "n": 3
+          },
+          {
+            "domain": "lshape",
+            "mean": 0.003326651950677236,
+            "n": 3
+          },
+          {
+            "domain": "naca0012",
+            "mean": -0.004526394108931224,
+            "n": 3
+          },
+          {
+            "domain": "slit",
+            "mean": -0.008933201432228088,
+            "n": 3
+          },
+          {
+            "domain": "star",
+            "mean": 0.00916458417971929,
+            "n": 3
+          }
+        ],
+        "ratio_of_means": 0.9973893720475474,
+        "sd": 0.03521050108913723,
+        "se": 0.008299194696368419,
+        "stars": "n.s.",
+        "t": -0.042967961906645924,
+        "wilcoxon_p_less": 0.31984710693359375
+      }
+    },
+    "chart-fixed": {
+      "rel_h1": {
+        "ci_high": 0.017633721426961232,
+        "ci_low": -0.028447791300718065,
+        "domain_sign_test_p": 0.34375,
+        "domains_negative": 4,
+        "domains_total": 6,
+        "mean": -0.005407034936878417,
+        "mean_of_ratios": 0.9812871220180747,
+        "n": 18,
+        "negative": 12,
+        "p_two_sided": 0.6268567213401535,
+        "per_domain": [
+          {
+            "domain": "annulus",
+            "mean": 0.0021714617808659873,
+            "n": 3
+          },
+          {
+            "domain": "double_hole",
+            "mean": -0.015628233551979065,
+            "n": 3
+          },
+          {
+            "domain": "lshape",
+            "mean": -0.004863865673542023,
+            "n": 3
+          },
+          {
+            "domain": "naca0012",
+            "mean": -0.013231349488099417,
+            "n": 3
+          },
+          {
+            "domain": "slit",
+            "mean": -0.008161914845307669,
+            "n": 3
+          },
+          {
+            "domain": "star",
+            "mean": 0.007271692156791687,
+            "n": 3
+          }
+        ],
+        "ratio_of_means": 0.9793567662590011,
+        "sd": 0.046332793936244045,
+        "se": 0.010920744261212373,
+        "stars": "n.s.",
+        "t": -0.4951159744746327,
+        "wilcoxon_p_less": 0.10607147216796875
+      },
+      "rel_l2": {
+        "ci_high": 0.01268297068011471,
+        "ci_low": -0.022178614785920002,
+        "domain_sign_test_p": 0.109375,
+        "domains_negative": 5,
+        "domains_total": 6,
+        "mean": -0.0047478220529026454,
+        "mean_of_ratios": 0.9639706126667833,
+        "n": 18,
+        "negative": 12,
+        "p_two_sided": 0.5730387651497401,
+        "per_domain": [
+          {
+            "domain": "annulus",
+            "mean": -0.005653621007998784,
+            "n": 3
+          },
+          {
+            "domain": "double_hole",
+            "mean": -0.007905376454194387,
+            "n": 3
+          },
+          {
+            "domain": "lshape",
+            "mean": -0.005437470972537994,
+            "n": 3
+          },
+          {
+            "domain": "naca0012",
+            "mean": -0.010017833362023035,
+            "n": 3
+          },
+          {
+            "domain": "slit",
+            "mean": -0.008314532538255056,
+            "n": 3
+          },
+          {
+            "domain": "star",
+            "mean": 0.008841902017593384,
+            "n": 3
+          }
+        ],
+        "ratio_of_means": 0.9652416854056282,
+        "sd": 0.03505168472297874,
+        "se": 0.00826176131987706,
+        "stars": "n.s.",
+        "t": -0.574674318111782,
+        "wilcoxon_p_less": 0.09819412231445312
+      }
+    }
+  }
+}

@@ -82,6 +82,43 @@ def test_naca0012_mask_removes_the_airfoil():
     assert m[above].all()
 
 
+def test_slit_is_a_crack_from_the_wall():
+    """The slit opens on the left wall, ends inside the box, and is one cell-set."""
+    m = get_mask("slit", 64)
+    x = np.linspace(-1, 1, 64)
+    X, Y = np.meshgrid(x, x, indexing="ij")
+    crack = (X < -0.2) & (np.abs(Y) < 0.02)
+    assert crack.any() and not m[crack].any(), "the crack must be inactive"
+    # The crack must reach the Dirichlet frame: every node of the first active
+    # column inside the band is inactive.
+    tip = (X > -0.05) & (X <= 0.0) & (np.abs(Y) < 0.02)   # last crack column
+    assert tip.any() and not m[tip].any(), "the crack tip must be inactive"
+    # ...and the cells just past the tip are active: the crack stops inside.
+    past = (X > 0.05) & (X < 0.15) & (np.abs(Y) < 0.02)
+    assert m[past].all()
+    # Two rows apart from the crack the domain is active (it is a slit, not a cut).
+    above = (np.abs(X + 0.5) < 0.05) & (np.abs(Y - 0.15) < 0.01)
+    assert m[above].all()
+    # And the mask is a single connected piece.
+    from scipy.ndimage import label
+    _, n = label(m)
+    assert n == 1
+
+
+def test_double_hole_has_two_holes():
+    from scipy.ndimage import label
+
+    m = get_mask("double_hole", 64)
+    x = np.linspace(-1, 1, 64)
+    X, Y = np.meshgrid(x, x, indexing="ij")
+    for centre in (-0.36, 0.36):
+        hole = np.hypot(X - centre, Y) < 0.12
+        assert hole.any() and not m[hole].any(), f"hole at x={centre} must be inactive"
+    assert m[(np.abs(X) < 0.05) & (np.abs(Y) < 0.15)].all(), "the bridge must be active"
+    labels, n = label(m)
+    assert n == 1
+
+
 def test_clear_frame():
     m = np.ones((16, 16), dtype=bool)
     c = clear_frame(m)

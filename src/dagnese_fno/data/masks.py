@@ -11,14 +11,16 @@ with ``'ij'`` ordering, so that ``mask[i, j]`` is the cell centred at
 layer, which is what the finite-volume solver in :mod:`dagnese_fno.data.darcy`
 assembles.
 
-Four domains are registered in :data:`DOMAINS`:
+Six domains are registered in :data:`DOMAINS`:
 
-==============  =============================================================
-``star``        5-lobed star, smooth but strongly non-convex
-``lshape``      square minus a quadrant: the textbook re-entrant corner
-``annulus``     doubly connected (a hole), the case a convex chart cannot cover
-``naca0012``    square minus a symmetric NACA 0012 profile (this work)
-==============  =============================================================
+===============  ============================================================
+``star``         5-lobed star, smooth but strongly non-convex
+``lshape``       square minus a quadrant: the textbook re-entrant corner
+``annulus``      doubly connected (a hole), the case a convex chart cannot cover
+``naca0012``     square minus a symmetric NACA 0012 profile (this work)
+``slit``         a crack entering from the wall: singular gradient at the tip
+``double_hole``  a plate with two circular holes (multiply connected, two bodies)
+===============  ============================================================
 
 Adding a domain means writing a mask function and registering a
 :class:`DomainSpec` here; the generator, the solver, the CLI and the benchmark
@@ -44,6 +46,8 @@ __all__ = [
     "lshape_mask",
     "annulus_mask",
     "naca0012_mask",
+    "slit_mask",
+    "double_hole_mask",
     "get_mask",
     "mask_summary",
 ]
@@ -131,6 +135,35 @@ def naca0012_mask(n: int, x_le: float = 0.1, x_te: float = 0.9) -> np.ndarray:
     return clear_frame(~inside_airfoil)
 
 
+def slit_mask(n: int, crack_half_width: float = 0.05) -> np.ndarray:
+    """Box with a horizontal crack entering from the left wall.
+
+    The crack is the band ``|y| <= crack_half_width`` for ``x <= 0``.  It ends in
+    a re-entrant tip at the origin, where the solution of the elliptic problem has
+    a singular gradient, and it opens onto the Dirichlet frame at the wall: the
+    domain is simply connected but its boundary is not the boundary of a convex
+    set, and a chart has to send cells *around* the tip.  At ``n = 64`` the band
+    is about three cells wide, so the solver sees a genuine slit and not a
+    rounded notch.
+    """
+    _, X, Y = grid_2d(n)
+    crack = (X <= 0.0) & (np.abs(Y) <= crack_half_width)
+    return clear_frame(~crack)
+
+
+def double_hole_mask(n: int, radius: float = 0.25, centre: float = 0.4) -> np.ndarray:
+    """Box with two circular holes centred at ``(+-centre, 0)``.
+
+    Multiply connected with two bodies instead of one: the monitor density has to
+    be routed through three channels of very different width, which is the
+    setting in which a *single* global deformation has to compromise.  Kept
+    disjoint from the frame, so that the Dirichlet layer is the outer box.
+    """
+    _, X, Y = grid_2d(n)
+    holes = (np.hypot(X + centre, Y) <= radius) | (np.hypot(X - centre, Y) <= radius)
+    return clear_frame(~holes)
+
+
 # --------------------------------------------------------------------------- #
 # Registry
 # --------------------------------------------------------------------------- #
@@ -173,6 +206,20 @@ DOMAINS: dict[str, DomainSpec] = {
         default_seed=3,
         simply_connected=False,
         description="square minus a symmetric NACA 0012 airfoil (thin obstacle + cusp)",
+    ),
+    "slit": DomainSpec(
+        name="slit",
+        mask_fn=slit_mask,
+        default_seed=4,
+        simply_connected=True,
+        description="box with a crack from the wall: singular gradient at the tip",
+    ),
+    "double_hole": DomainSpec(
+        name="double_hole",
+        mask_fn=double_hole_mask,
+        default_seed=5,
+        simply_connected=False,
+        description="box with two circular holes: two bodies, three channels",
     ),
 }
 

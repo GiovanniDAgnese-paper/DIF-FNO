@@ -184,6 +184,300 @@ Tests: `test_identity_has_unit_determinant_at_every_resolution`,
 
 ---
 
+---
+
+# Part II — the D'Agnese Chart Operator
+
+Part I is about *penalising* a defective chart.  Part II removes the defect:
+the chart is a member of a class in which $\det J>0$ and injectivity are
+*structural*, and it is trained by an objective that gives it a well-defined
+job.  The v1 objects (P1–P4) remain the ablation baseline.
+
+## 0'. Setting
+
+Write $\hat u = (u,v) \in [0,1]^2$ for the *normalised* reference coordinates of
+an $N\times N$ grid, $\Delta u = 1/(N-1)$, and $\Delta \xi = 2/(N-1)$ for the
+physical grid spacing.  A chart is a map $\Phi : [-1,1]^2 \to [-1,1]^2$.
+The transported field is
+
+$$
+\tilde a = P_\Phi a = a \circ \Phi, \qquad
+P_\Phi^{-1} \tilde a = \tilde a \circ \Phi^{-1},
+$$
+
+and the operator is $\;u = T^{\Phi}_{\theta}(a) = P^{-1}_\Phi\,
+\mathcal F_\theta\!\left(\Phi, P_\Phi a\right)$, where $\mathcal F_\theta$ is the
+same FNO as in Part I, evaluated on the chart nodes.
+
+---
+
+## P5 — The D'Agnese chart: an exact, globally injective, parameter-free chart
+
+**Definition.** A *D'Agnese triangular chart* is
+
+$$
+\Phi(\xi_1,\xi_2) = \big(2\,g(\hat u) - 1,\; 2\,\hat h(\hat u, v) - 1\big),
+$$
+
+where $g : [0,1] \to [0,1]$ is continuous, piecewise linear on the uniform grid
+with $g(0)=0$, $g(1)=1$, and for every $\hat u$, $\hat h(\hat u,\cdot)$ is
+strictly increasing piecewise linear with $\hat h(\cdot,0)=0$,
+$\hat h(\cdot,1)=1$; $\hat h$ is bilinear in $(\hat u,v)$ between grid rows.
+
+Both are generated from *strictly positive* increments,
+
+$$
+w_i = (1-\varepsilon)\,\mathrm{softmax}(z)_i + \varepsilon/K, \qquad
+K = N-1,\;\; 0<\varepsilon<1,
+$$
+
+by a cumulative sum, where $z$ is the output of a small MLP.  Positivity is
+therefore a property of the parametrisation, not of the optimiser.
+
+**P5.i (Global injectivity).**  If $\Phi(\xi)=\Phi(\xi')$ then $g(\hat u)=g(\hat u')$,
+and $g$ strictly increasing gives $\hat u=\hat u'$; then
+$\hat h(\hat u,v)=\hat h(\hat u,v')$ and $\hat h(\hat u,\cdot)$ strictly
+increasing gives $v=v'$.  Hence $\Phi$ is injective on the closed square, not
+merely a local diffeomorphism.  $\;\square$
+
+**P5.ii (Orientation, exactly).**  On the cell $C_{ij}$ the map is the bilinear
+interpolant of its four corner images, so $J_\Phi$ is lower triangular,
+
+$$
+J_\Phi = \begin{pmatrix} \dfrac{2\,\Delta g_i}{\Delta\xi} & 0\\[6pt]
+\partial_{\xi_1}\Phi_2 & \dfrac{2\,\Delta_v h_{ij}}{\Delta\xi}\end{pmatrix},
+\qquad
+\det J_\Phi = \frac{4\,\Delta g_i\,\Delta_v h_{ij}}{\Delta\xi^{2}} > 0 ,
+$$
+
+and it is computed as a *product*, never as $ad-bc$: the sign cannot be destroyed
+by cancellation even when $|ad|$ and $|bc|$ are $10^{6}$ apart.  $\;\square$
+
+**P5.iii (Exact inverse).**
+$\Phi^{-1}(y_1,y_2) = \big(g^{-1}(y_1),\; \hat h(g^{-1}(y_1),\cdot)^{-1}(y_2)\big)$:
+two monotone 1-D inversions in closed form, no iteration and no Newton step.
+`DagneseTriangularChart.inverse` evaluates it on a grid and
+`DagneseTriangularChart.inverse_at` at *arbitrary* points, which is what an
+adaptive solver needs in order to locate a physical point in the mesh.
+
+**P5.iv (A parameter-free floor).**  Because every increment is at least
+$\varepsilon/K$ and $2/(K\Delta\xi) = 1/(\Delta\xi K)\cdot 2$,
+
+$$
+\min \Delta g_i \ge \frac{\varepsilon}{K}, \qquad
+\min_{ij}\Delta_v h_{ij} \ge \frac{\varepsilon}{K}
+\;\Longrightarrow\;
+\det J_\Phi \;\ge\; \Big(\frac{2\varepsilon}{K\,\Delta\xi}\Big)^{2} = \varepsilon^{2},
+$$
+
+independently of $N$, of $\theta$, and of the size of the deformation.
+
+Three numbers from the v1 line show what this replaces:
+
+* with pointwise conditioning $\kappa \approx 3\cdot10^{2}$, so the P3
+  certificate $(1-\kappa L)^2$ is positive only for
+  $L < 3\cdot10^{-3}$ — an infinitesimal perturbation of the identity.  Getting a
+  usable $\kappa = 1$ required switching to *global* conditioning;
+* the v1 barrier configurations (`dif-barrier`, `dif-barrier-large`) report a
+  certified bound of exactly $\mathbf{0}$: there is no certificate at all,
+  because a softplus penalty is not a constraint (P2 scope note);
+* the v1 certified configuration (`dif-certified`) does report
+  $(1-L)^2 \in [0.42, 0.52]$, but only because it *caps* $L$, which also caps
+  the deformation it can represent.
+
+The D'Agnese chart reports $\varepsilon^2 = 10^{-6} > 0$ for **every** parameter
+value with **no** constraint on the deformation.  $\;\square$
+
+**P5.v (Identity at initialisation).**  A zeroed output layer gives constant
+logits, hence a uniform softmax and $\Phi = \mathrm{Id}$ to the last bit; the
+mixture $\varepsilon/K$ preserves exactness of this statement for every
+$\varepsilon$.  This is what makes the operator a *strict superset* of the
+baseline: at $t=0$ it computes the FNO output bit-for-bit (measured: $3\cdot10^{-8}$).
+
+**P5.vi (Closure).**  Compositions of D'Agnese charts are D'Agnese charts
+(each is injective and orientation preserving; the second layer is evaluated at
+the images of the first by bilinear interpolation, which *is* the piecewise
+bilinear map it represents).  The class contains the identity and is closed under
+composition: a monoid of admissible charts, not a ball around the identity.
+
+> **Why the mixture $\varepsilon/K$?**  A pure softmax is strictly positive in
+> exact arithmetic but *underflows to zero* in float32 once the logits span
+> $\sim 90$: the measured fold rate of a pure-softmax chart at parameter scale
+> $10^{2}$ was 24–99 %.  The floor $\varepsilon = 10^{-3}$ keeps every increment
+> above $\sim 250$ ulps at $N=64$, so the cumulative sum cannot absorb it and
+> cannot produce a repeated knot.  The price is a cap $K/\varepsilon \sim 6\cdot
+> 10^{4}$ on the cell-size ratio, far outside anything a learned chart needs.
+
+**Verification** (`scripts/run_chart_study.py`, `results/study/STUDY.md`).
+Three random inits per parameter scale, $N=32$, one layer, 32 hidden units:
+
+| parameter scale | $\min\det J$ | folded cells | certified lb | parameter-free floor |
+|---|---|---|---|---|
+| 0 (identity) | 1.000 | 0.00 % | 1.000 | $10^{-6}$ |
+| 0.1 | 0.886 | 0.00 % | 0.880 | $10^{-6}$ |
+| 1 | $1.4\cdot10^{-6}$ | 0.00 % | $1.2\cdot10^{-6}$ | $10^{-6}$ |
+| 3 | $9.98\cdot10^{-7}$ | 0.00 % | $9.98\cdot10^{-7}$ | $10^{-6}$ |
+| 10 | $9.97\cdot10^{-7}$ | 0.00 % | $9.97\cdot10^{-7}$ | $10^{-6}$ |
+| 30 | $9.97\cdot10^{-7}$ | 0.00 % | $9.97\cdot10^{-7}$ | $10^{-6}$ |
+| $10^{2}$ | $9.99\cdot10^{-7}$ | 0.00 % | $9.99\cdot10^{-7}$ | $10^{-6}$ |
+| $10^{3}$ | $9.99\cdot10^{-7}$ | 0.00 % | $9.99\cdot10^{-7}$ | $10^{-6}$ |
+
+The certificate is *tighter* than the parameter-free floor at moderate scales and
+equals it in the adversarial limit; the fold rate is zero in every row.  The
+parameter-free floor $(2\varepsilon/(K\Delta\xi))^2$ is a statement about $\theta$;
+in float32 the *computed* knots give $9.98\cdot10^{-7}$, a relative deficit of
+$2\cdot10^{-3}$ caused by the accumulation of $O(\varepsilon_{32})$ absolute
+errors in the cumulative sum.  Both numbers are reported: the theorem is about
+the parametrisation, the measurement is about the arithmetic.  Tests:
+`tests/test_monotone.py` (P5.i–vi, conditioning, gradients, resolution
+consistency, bad inputs).
+
+---
+
+## P6 — The round trip is second order
+
+**Claim.**  Let $f \in C^2(\Omega)$ and let $h$ be the largest chart cell
+diameter.  Then
+
+$$
+\| P^{-1}_\Phi P_\Phi f - f \|_{\infty} \;\le\; C\,h^{2}\,\|D^{2} f\|_{\infty},
+$$
+
+where $C$ depends on the cell aspect ratio only.  Indeed $P^{-1}_\Phi P_\Phi f$ is
+the piecewise-bilinear interpolant of $f$ on the chart cells, and a bilinear
+interpolant reproduces linear functions exactly with the classical
+$\tfrac{1}{8}h^2\|D^2f\|_\infty$ bound; pulling back and pushing forward only
+re-evaluates the same interpolant at different points.
+
+**Verification.**  One random chart ($\text{scale}=0.4$), a smooth field
+$\sin 3x\cos 2y + x/2$:
+
+| $N$ | $\|P^{-1}P f - f\|_\infty$ | rms | $\|\Phi^{-1}\Phi-\mathrm{Id}\|_\infty$ |
+|---|---|---|---|
+| 32 | $5.60\cdot10^{-2}$ | $1.23\cdot10^{-2}$ | $4.2\cdot10^{-7}$ |
+| 64 | $1.43\cdot10^{-2}$ | $3.16\cdot10^{-3}$ | $6.6\cdot10^{-7}$ |
+| 128 | $3.46\cdot10^{-3}$ | $8.15\cdot10^{-4}$ | $6.6\cdot10^{-7}$ |
+| 256 | $9.04\cdot10^{-4}$ | $2.04\cdot10^{-4}$ | $1.2\cdot10^{-6}$ |
+
+Observed order **1.97 (rms) / 1.99 (max)**.  The inverse is exact to
+$10^{-6}$ at every resolution — in particular it does *not* degrade with $N$,
+because it is a closed-form inversion of the same knots and not a numerical
+solve.  For a field with an unresolved internal layer the observed order drops
+to $1.7$: the transport is not the bottleneck there, the discretisation of the
+field is.  Tests: `tests/test_transport.py`, `tests/test_monotone.py`
+(`test_round_trip_*`, `test_convergence_order_*`).
+
+---
+
+## P7 — The D'Agnese Equidistribution Loss
+
+**Definition.**
+
+$$
+\mathcal L_{\mathrm{eq}}(\Phi) \;=\; \frac{1}{N_c}\sum_{C}
+\Big(\frac{M_C}{\bar M} - 1\Big)^{2},
+\qquad
+M_C = m\big|_{\Phi(C)}\,\lvert\det J_\Phi\rvert_C\,\Delta\xi^{2},
+\qquad
+\bar M = \frac{1}{N_c}\sum_C M_C ,
+$$
+
+with $m>0$ a monitor function (default $m = (\varepsilon_0 + |\nabla a|^2)^{1/2}$).
+
+**(i) Non-negativity and characterisation.**  $\mathcal L_{\mathrm{eq}} \ge 0$ and
+$\mathcal L_{\mathrm{eq}} = 0 \iff M_C = \bar M$ for every cell: the loss vanishes
+*exactly* on the equidistributing meshes and nowhere else.
+
+**(ii) Scale invariance.**  $\mathcal L_{\mathrm{eq}}$ is invariant under
+$m \mapsto c\,m$ and under a rescaling of the domain, because it is normalised by
+$\bar M$.  A loss without the normalisation could be driven to zero by shrinking
+every cell, which is the sense in which naive "uniform cell size" objectives are
+gameable.
+
+**(iii) Worst-cell control.**  With $x_C = M_C/\bar M$ and $N_c$ cells,
+Cauchy–Schwarz gives
+
+$$
+\max_C \frac{M_C}{\bar M} \le 1 + \sqrt{N_c\,\mathcal L_{\mathrm{eq}}},
+\qquad
+\min_C \frac{M_C}{\bar M} \ge 1 - \sqrt{N_c\,\mathcal L_{\mathrm{eq}}} .
+$$
+
+So a *small* loss bounds the mass of the worst cell, which is the quantity the
+classical theory controls (de Boor 1973: the mesh minimising
+$\max_C \int_C m$ equidistributes the monitor).
+
+**(iv) Optimality for the representation error.**  If $m \ge m_0 > 0$ and
+$|D^2 f| \le M_f$, then on a chart whose cells have diameter $h_C$,
+
+$$
+\|f - I_h f\|_\infty \le \frac{M_f}{8}\max_C h_C^2
+\le \frac{M_f}{8\,m_0^{2}}\max_C \Big(\int_C m\Big)^{2},
+$$
+
+because $\int_C m \ge m_0 |C| \ge m_0 h_C$.  The right-hand side is minimised,
+with value $(I_m/N_c)^2$ where $I_m=\int_\Omega m$, exactly when the monitor is
+equidistributed.  Hence the equidistributed chart minimises a *certified upper
+bound* on the representation error at fixed resolution.  The chain is a
+statement about the chart interpolant; composing with $\Phi$ adds the $O(h^2)$
+factor of P6.
+
+**(v) What it does not say.**  Equidistribution minimises the worst cell mass,
+not the $L^\infty$ error of the network's output, and not the PDE residual.  It is
+an auxiliary objective, and §P8 measures how much it actually buys.
+
+**(vi) Differentiability.**  $M_C$ is smooth in $\theta$ wherever the bracket of
+the monotone inversion is locally constant, and $\bar M > 0$ by P5; the loss is
+therefore differentiable almost everywhere, and its gradient reaches the chart
+parameters (tested).
+
+**Verification.**  A one-layer chart ($N=64$, 400 Adam steps, equidistribution
+loss only, no data) compresses the mesh at a boundary layer, a ridge, and a
+smooth field:
+
+| field | loss (init $\to$ final) | cell-mass ratio | repr. error, uniform | repr. error, chart | gain |
+|---|---|---|---|---|---|
+| boundary layer | $0.43 \to 9.0\cdot10^{-4}$ | 1.30 | $4.06\cdot10^{-2}$ | $9.9\cdot10^{-3}$ | **4.1×** |
+| ridge | $0.18 \to 1.2\cdot10^{-3}$ | 1.49 | $1.34\cdot10^{-2}$ | $6.7\cdot10^{-3}$ | **2.0×** |
+| smooth | $0.029 \to 2.2\cdot10^{-3}$ | 1.81 | $1.71\cdot10^{-3}$ | $3.2\cdot10^{-3}$ | 0.54× |
+
+The last row is the honest one and it is not a bug: equidistribution minimises
+the worst *mass*, and for a field whose monitor is already nearly uniform the
+redistribution has nothing to gain while the moment-to-moment jitter of the
+optimiser costs a little.  Two consequences are drawn in the paper and in the
+API: (a) the loss is an *auxiliary* term in the operator, weighted by
+$\lambda_{\mathrm{eq}}$, never the only objective; (b) the chart can always fall
+back to the identity, which is in the class by P5.v, so the operator cannot be
+worse than its own baseline in the model class — only in an individual
+finite-precision run.
+
+---
+
+## P8 — The chart is a gauge (a consistency remark, not a theorem)
+
+Two different charts represent the same physical field, and the transported
+operator is the same operator seen through a different discretisation:
+
+$$
+\big\|P^{-1}_{\Phi_a} T P_{\Phi_a} f \;-\; P^{-1}_{\Phi_b} T P_{\Phi_b} f\big\|
+\;\le\; \|P^{-1}_{\Phi_a}TP_{\Phi_a}f - Tf\| + \|T f - P^{-1}_{\Phi_b}TP_{\Phi_b}f\|,
+$$
+
+and each term is bounded by the transport error of the corresponding chart
+(P6).  The chart therefore changes the *representation* — where the degrees of
+freedom sit — not the physical problem.  This is what makes "the same network at
+every resolution" meaningful, and it is why the chart must be trained with the
+task loss: the gauge freedom is invisible to the equidistribution term alone.
+
+Measured on a deliberately strong chart (mean displacement 0.46, i.e. half the
+domain): the relative difference between two such charts is
+$1.7\cdot10^{-1}$, $2.7\cdot10^{-1}$, $9.3\cdot10^{-2}$ at $N=32,64,128$.  It is
+*not* a clean $O(h^{2})$ sequence, because a violent chart makes the transport
+error dominated by its smallest cells rather than by the mean spacing — this is
+precisely the regime in which one should not use a violent chart, and it is
+reported here so that the reader does not over-read P8.  No theorem is claimed.
+
+---
 ## What is *not* claimed
 
 * The softplus barrier (P2) is a soft penalty. It makes folding *expensive*, not
@@ -194,5 +488,31 @@ Tests: `test_identity_has_unit_determinant_at_every_resolution`,
   of P3 is the standard, local-to-global caveat included.
 * The empirical statement "0.00% grid folding" is a measurement on the
   validation samples at the end of training, not a theorem — unless the run used
-  `lipschitz_mode="spectral"`, in which case P3 applies and the reported
-  `certified_det_lower_bound` is a valid lower bound.
+  `lipschitz_mode="spectral"`, in which case P3 applies, or the model is a
+  `DagneseChartOperator`, in which case P5 applies and the guarantee is
+  structural.
+* P5 gives $\det J>0$ **on the discretised cells**.  The continuous piecewise
+  bilinear interpolant of a D'Agnese chart is globally injective because the
+  construction is separable and monotone in each argument — that part is a
+  theorem, not a discretisation statement — but the *composed* multi-layer chart
+  is injective only in the sense that a composition of injective maps is
+  injective, and each layer is evaluated at the previous layer's images by
+  bilinear interpolation whose exactness is asserted on the grid nodes.
+* The lower bound is $\varepsilon^2$: it is *positive*, and it is *not tight*.
+  A trained chart can have $\min\det J \approx 0.8$ while the certificate reports
+  $10^{-6}$.  The certificate is a worst-case statement over the whole parameter
+  space, and it should be reported as such.
+* $\det J > 0$ everywhere does not make the *network* well conditioned, does not
+  bound the Lipschitz constant of the operator, and does not bound the PDE error.
+* Nothing in P5–P8 *implies* that the chart improves accuracy.  P7(iv) bounds a
+  representation error; the P7 table shows that the bound is productive for
+  feature-dominated fields and neutral (or negative) otherwise.  The accuracy
+  claims live or die in `results/v2/TABLE.md`, with paired seeds and the seed
+  noise reported — and there the chart is **neutral**: pooled
+  $\Delta L^2 = -0.0004$ with a 95\u00a0% interval of $[-0.018,+0.017]$ over eighteen
+  paired runs on six geometries, and $\Delta H^1 = +0.0199$ (n.s.).  That is a
+  measurement on one protocol, and it is a null one.  The guarantee, not the
+  error, is the claim of this document.
+* The `dif*` rows of `results/repro` were produced with the original v1 data
+  pipeline; they are not numerically comparable to the `results/v2` sweep, which
+  is internally consistent.  Do not mix the two tables.

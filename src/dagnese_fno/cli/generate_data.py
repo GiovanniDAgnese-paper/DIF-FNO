@@ -44,7 +44,17 @@ def main(argv=None) -> int:
     args = parse_args(argv)
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    manifest = {"generated": {}, "args": vars(args)}
+    # Merge into an existing manifest, so that generating a subset of the
+    # domains (``--domains slit``) does not erase the record of the others.
+    manifest_path = out_dir / "manifest.json"
+    manifest = {"generated": {}}
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text())
+            manifest.setdefault("generated", {})
+        except json.JSONDecodeError:  # pragma: no cover - corrupt manifest
+            manifest = {"generated": {}}
+    manifest["args"] = vars(args)
 
     for domain in args.domains:
         seed = args.seed if args.seed is not None else DOMAINS[domain].default_seed
@@ -72,7 +82,7 @@ def main(argv=None) -> int:
         manifest["generated"][domain] = info
         print(f"  -> {target}  ({info['seconds']}s, fill={info['fill_fraction']:.3f})")
 
-    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True))
     print(f"\nDONE. Manifest: {out_dir / 'manifest.json'}")
     return 0
 

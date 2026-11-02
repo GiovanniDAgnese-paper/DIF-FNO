@@ -12,6 +12,8 @@ machinery used by ``scripts/run_benchmark.py``:
 * :func:`~dagnese_fno.evaluation.statistics.t_interval` /
   :func:`~dagnese_fno.evaluation.statistics.mean_ci` -- the two intervals
   themselves (Student-t, the one we quote, and percentile bootstrap);
+* :func:`~dagnese_fno.evaluation.statistics.sign_test` -- the exact one-sided
+  sign test over *groups* (geometries), for the case where the runs are nested;
 * :func:`~dagnese_fno.evaluation.statistics.significance_stars` and
   :func:`~dagnese_fno.evaluation.statistics.format_pm` -- rendering.
 """
@@ -20,6 +22,7 @@ from .statistics import (
     format_pm,
     mean_ci,
     paired_test,
+    sign_test,
     significance_stars,
     summarise,
     t_interval,
@@ -30,6 +33,7 @@ __all__ = [
     "mean_ci",
     "t_interval",
     "summarise",
+    "sign_test",
     "format_pm",
     "significance_stars",
 ]

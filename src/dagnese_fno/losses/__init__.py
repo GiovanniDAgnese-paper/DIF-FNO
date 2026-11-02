@@ -10,6 +10,7 @@ from .barrier import (
     log_barrier,
 )
 from .combined import DiffeomorphicOperatorLoss, masked_mse
+from .equidistribution import DagneseEquidistributionLoss, gradient_monitor
 
 __all__ = [
     "DAgneseBarrierLoss",
@@ -21,4 +22,6 @@ __all__ = [
     "get_folding_penalty",
     "DiffeomorphicOperatorLoss",
     "masked_mse",
+    "DagneseEquidistributionLoss",
+    "gradient_monitor",
 ]

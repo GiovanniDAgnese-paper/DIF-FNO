@@ -6,6 +6,7 @@ from typing import Any
 
 import torch.nn as nn
 
+from .chart_operator import DagneseChartOperator
 from .dif_fno import ConditionEncoder, DIFFNO2d
 from .diffeo import DiffeomorphicMap, SpectralLinear
 from .fno import FNO2d
@@ -13,6 +14,7 @@ from .spectral import SpectralConv2d
 
 __all__ = [
     "FNO2d",
+    "DagneseChartOperator",
     "DIFFNO2d",
     "DiffeomorphicMap",
     "SpectralLinear",
@@ -26,6 +28,11 @@ MODEL_REGISTRY = {
     "dif": DIFFNO2d,
     "dif-fno": DIFFNO2d,
     "dif_fno": DIFFNO2d,
+    "chart": DagneseChartOperator,
+    "dao": DagneseChartOperator,
+    "chart-fno": DagneseChartOperator,
+    "chart_fno": DagneseChartOperator,
+    "cpo": DagneseChartOperator,
 }
 
 
@@ -42,7 +49,13 @@ def build_model(kind: str, **kwargs: Any) -> nn.Module:
         raise ValueError(f"unknown model '{kind}'; available: {sorted(MODEL_REGISTRY)}")
     cls = MODEL_REGISTRY[key]
 
-    if cls is FNO2d:
+    if cls is DagneseChartOperator:
+        allowed = {"width", "modes1", "modes2", "n_layers", "fc_channels", "out_channels",
+                   "chart_hidden", "chart_layers", "chart_fourier", "chart_activation",
+                   "chart_conditioning", "latent_dim", "alpha", "chart_min_increment",
+                   "activation", "init"}
+        kwargs = {k: v for k, v in kwargs.items() if k in allowed}
+    elif cls is FNO2d:
         allowed = {"in_channels", "out_channels", "width", "modes1", "modes2",
                    "n_layers", "fc_channels", "activation", "init"}
         kwargs = {k: v for k, v in kwargs.items() if k in allowed}
