@@ -381,7 +381,7 @@ def markdown_table(summary: dict, runs: list[dict]) -> str:
                 d, v,
                 fmt(e["fold_pct"][0], 2),
                 fmt(e.get("min_detJ", (np.nan,))[0], 3),
-                0 if "certified_det_lower_bound" in e else "--",
+                f"{e['certified_det_lower_bound'][0]:.2e}" if "certified_det_lower_bound" in e else "--",
                 fmt(e.get("kappa", (np.nan,))[0], 2),
                 f"{e['chart_inverse_error'][0]:.1e}" if "chart_inverse_error" in e else "--",
                 fmt(e.get("eq_residual_pct", (np.nan,))[0], 1),
