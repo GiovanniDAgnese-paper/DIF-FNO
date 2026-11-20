@@ -1,53 +1,46 @@
-# Pubblicare DIF-FNO 1.2.0 su Zenodo
+# Archivio Zenodo di DIF-FNO
 
-**Pubblica un nuovo record di tipo Software.** Il DOI
-[`10.5281/zenodo.22814077`](https://doi.org/10.5281/zenodo.22814077)
-identifica il preprint precedente *DIF-FNO: Diffeomorphic Fourier Neural
-Operator with D'Agnese Barrier Loss* (versione Zenodo `v8`, file
-`dif-fno-v4.zip`). Non è il DOI del software 1.2.0: non riutilizzarlo e non
-premere **New version** su quel preprint per depositare questo software. I due
-record si collegano tramite **Related works**.
+Per citare il software **DIF-FNO 1.2.0**, usa il DOI specifico
+[`10.5281/zenodo.24406366`](https://doi.org/10.5281/zenodo.24406366).
+Il [record Software](https://zenodo.org/records/24406366) è pubblico, con
+licenza MIT, dal 20 novembre 2026. La citazione è in
+[`CITATION.cff`](../CITATION.cff) e nel [README](../README.md#10-citation).
 
-## 1. Prepara e controlla lo ZIP
+| Identificatore | Che cosa identifica |
+| --- | --- |
+| [`10.5281/zenodo.24406366`](https://doi.org/10.5281/zenodo.24406366) | Il deposito con lo ZIP di **DIF-FNO 1.2.0**; Zenodo lo mostra come `v9`. |
+| [`10.5281/zenodo.22814077`](https://doi.org/10.5281/zenodo.22814077) | Il preprint DIF-FNO precedente, mostrato da Zenodo come `v8`. Non identifica lo ZIP di 1.2.0. |
+| [`10.5281/zenodo.22071926`](https://doi.org/10.5281/zenodo.22071926) | Il DOI della serie Zenodo che include entrambi i depositi. Non identifica uno ZIP preciso. |
 
-Se hai già `DIF-FNO-1.2.0.zip` e `DIF-FNO-1.2.0.zip.sha256`, scaricali nella
-stessa cartella e verifica il download con `sha256sum -c DIF-FNO-1.2.0.zip.sha256`
-(su macOS: `shasum -a 256 -c DIF-FNO-1.2.0.zip.sha256`). Il file `.sha256` serve
-per la verifica locale: non è necessario caricarlo.
+## Scaricare e verificare lo ZIP
 
-Per ricreare il pacchetto, usa il commit del deposito che contiene questa guida
-e `.zenodo.json`. Esegui questi comandi dalla radice del repository con quel
-commit attivo (Git esporta solo i file già committati, non i file locali):
+Scarica `DIF-FNO-4e9159d68d248dac0de6de6f16f6f7620f173e5a.zip` dalla sezione
+**Files** del [record Zenodo](https://zenodo.org/records/24406366). Il file è
+l'archivio GitHub del
+[commit `4e9159d`](https://github.com/GiovanniDAgnese-paper/DIF-FNO/tree/4e9159d68d248dac0de6de6f16f6f7620f173e5a).
+Il commit include il codice scientifico del tag GitHub
+[`v1.2.0`](https://github.com/GiovanniDAgnese-paper/DIF-FNO/tree/v1.2.0) e i
+metadati preparati prima del deposito. Le correzioni bibliografiche successive
+non cambiano lo ZIP già archiviato.
 
 ```bash
-mkdir -p zenodo-upload
-# Conserva questo SHA: è il commit esatto incluso nel file.
-git rev-parse HEAD
-git archive --format=zip --prefix=DIF-FNO-1.2.0/ \
-  --output=zenodo-upload/DIF-FNO-1.2.0.zip HEAD
-(
-  cd zenodo-upload &&
-  unzip -tq DIF-FNO-1.2.0.zip &&
-  sha256sum DIF-FNO-1.2.0.zip > DIF-FNO-1.2.0.zip.sha256
-)
+md5sum DIF-FNO-4e9159d68d248dac0de6de6f16f6f7620f173e5a.zip
+# Atteso secondo Zenodo: ba769ded51a2b746ceae5f829a95671f
+unzip -tq DIF-FNO-4e9159d68d248dac0de6de6f16f6f7620f173e5a.zip
 ```
 
-Il tag GitHub [`v1.2.0`](https://github.com/GiovanniDAgnese-paper/DIF-FNO/tree/v1.2.0)
-contiene il codice scientifico di riferimento. Lo ZIP del deposito aggiunge i
-file di pubblicazione e corregge i riferimenti bibliografici; **non spostare il
-tag** per includere queste modifiche. Il commit esatto è recuperabile anche dallo
-ZIP, con `unzip -z DIF-FNO-1.2.0.zip`.
+Su macOS, usa `md5` al posto di `md5sum`.
 
-| Nello ZIP | Contenuto |
+## Contenuto e riproduzione
+
+| Percorso | Contenuto |
 | --- | --- |
 | `src/`, `scripts/`, `tests/`, `examples/` | Implementazione Python, script, test ed esempio. |
-| `data/` | Manifest e metadati JSON dei dataset Darcy. Non contiene gli array `.pt`/`.npz` o i checkpoint. |
-| `results/v2/`, `results/study/`, `figures/` | Risultati del benchmark, verifica deterministica e figure. `results/repro/` contiene i risultati storici della linea v1. |
+| `data/` | Manifest e metadati dei dataset Darcy. Gli array `.pt`/`.npz` e i checkpoint non sono inclusi. |
+| `results/v2/`, `results/study/`, `figures/` | Risultati del benchmark, verifica deterministica e figure. `results/repro/` conserva i risultati storici della linea v1. |
 | `paper/` | Sorgenti LaTeX del manoscritto, bibliografia e tabelle, non il PDF del manoscritto. |
-| `LICENSE`, `CITATION.cff`, `.zenodo.json` | Licenza MIT, citazione del software e metadati per Zenodo. |
 
-Per un controllo rapido dopo l'estrazione, usa un ambiente Python 3.10+ e, dalla
-radice estratta:
+Dopo l'estrazione, dalla radice dello ZIP e con Python 3.10+:
 
 ```bash
 python -m venv .venv
@@ -57,64 +50,23 @@ python examples/quickstart.py
 python -m pytest
 ```
 
-Per rigenerare i dataset canonici usa `make data`; per rigenerare statistiche,
-tabelle e figure dei benchmark dai risultati inclusi, usa `make stats paper-tables`.
-Per rilanciare i benchmark, vedi la sezione 4 del [README](../README.md). Il PDF
-è facoltativo per il deposito del software; per compilare il manoscritto, segui
-le istruzioni in [`paper/README.md`](../paper/README.md).
+Usa `make data` per rigenerare i dataset canonici e `make stats paper-tables`
+per ricostruire statistiche, tabelle e figure del benchmark dai risultati
+inclusi. Per rilanciare il benchmark vedi la sezione 4 del [README](../README.md);
+per compilare il manoscritto, vedi [`paper/README.md`](../paper/README.md).
 
-## 2. Crea la bozza e compila i campi
+## Versioni future
 
-1. Accedi a [Zenodo](https://zenodo.org/) e scegli **+ → New upload**.
-2. Carica `DIF-FNO-1.2.0.zip`. Il modulo manuale non legge `.zenodo.json` dallo
-   ZIP: copia i campi della tabella qui sotto.
-3. In **Digital Object Identifier** rispondi **No** alla domanda se hai già un
-   DOI per questo upload. Zenodo lo assegna alla pubblicazione. Se ti serve prima,
-   puoi riservarlo con **Get a DOI now!** nella stessa bozza: il DOI sarà
-   registrato solo quando la pubblichi.
-4. Compila i campi. Verifica il nome; aggiungi ORCID e affiliazione solo se
-   confermati. Usa la data effettiva del deposito per **Publication date**.
+- Non ripubblicare lo stesso ZIP né spostare il tag `v1.2.0` per retroinserire
+  il DOI. Per pubblicare file nuovi nella stessa serie Zenodo, parti dal
+  [record Software](https://zenodo.org/records/24406366) e usa **New version**.
+- Mantieni **Software** come tipo di risorsa e indica la versione del pacchetto
+  nel campo **Version**. Se i file cambiano, usa il DOI specifico della nuova
+  versione nelle relative citazioni, non quello di un deposito precedente.
+- `.zenodo.json` è un file di metadati per l'integrazione GitHub, non la
+  citazione del deposito pubblicato. Per una nuova release automatica,
+  aggiornalo sul commit da taggare insieme alla versione del package. Non
+  usare sia il deposito manuale sia l'integrazione GitHub per la stessa release.
 
-| Campo Zenodo | Valore |
-| --- | --- |
-| Resource type | Software |
-| Title | The D'Agnese Chart Operator: Certified, Exactly Invertible, Adaptively Learned Charts for Neural Operators |
-| Creators | Family name: `D'Agnese`; Given names: `Giovanni` |
-| Version | `1.2.0` |
-| License | MIT License (`MIT`); selezionala al posto della licenza predefinita, se presente |
-| Visibility | Public (file aperti) |
-| Language | English (`eng`) |
-| Keywords and subjects | neural operator; fourier neural operator; diffeomorphism; certified invertibility; adaptive mesh; equidistribution; moving mesh; scientific machine learning; darcy flow; non-convex domains |
-| Related works | **Is derived from** → DOI `10.5281/zenodo.22814077`, tipo **Preprint** |
-| Repository URL (se disponibile) | `https://github.com/GiovanniDAgnese-paper/DIF-FNO` |
-| Programming language (se disponibile) | Python |
-
-**Description** (da copiare):
-
-> DIF-FNO 1.2.0 implements the D'Agnese Chart Operator, a Fourier neural operator evaluated on an adaptively learned triangular chart of the reference square. The chart is globally injective and has a positive Jacobian determinant and a closed-form inverse by construction. An optional equidistribution loss encourages the mesh to concentrate cells where a field has sharper features.
->
-> This software archive contains the Python source, tests, reproduction scripts, dataset generation metadata, benchmark results, figures, and LaTeX manuscript sources. The paired Darcy-flow benchmark covers six geometries and three seeds per configuration. Raw data arrays and trained checkpoints are not included; the generator for the canonical datasets is included. The archived code is based on the GitHub tag v1.2.0.
-
-## 3. Controlla, pubblica e aggiorna la citazione
-
-1. Salva e usa **Preview** per controllare file, titolo, autore, versione,
-   licenza, accesso e collegamento al preprint. Controlla di avere il diritto di
-   distribuire tutto il contenuto. Poi clicca **Publish** e conferma.
-2. Apri il record pubblico, verifica che il file sia scaricabile e copia il
-   **DOI specifico della versione 1.2.0**. Per citare esattamente lo ZIP usa
-   quello; l'eventuale DOI di tutte le versioni identifica la serie, non lo ZIP.
-3. Aggiorna `CITATION.cff` e il BibTeX/badge nel `README.md` sul repository con
-   il nuovo DOI di versione, mantenendo il DOI del preprint come riferimento
-   storico. Non occorre modificare i file già depositati solo per aggiungerci
-   il DOI: la pagina di Zenodo riporta già la citazione.
-4. In futuro, per depositare nuovi file mantenendo **la stessa serie software**,
-   apri il nuovo record Software e usa **New version** da lì. Non pubblicare
-   la stessa versione anche tramite l'integrazione automatica con GitHub:
-   creeresti un doppione. `.zenodo.json` è pronto per l'integrazione GitHub,
-   ma per eventuali future release automatiche va aggiornato in anticipo sul
-   commit da taggare, insieme alla versione nel package e alla citazione. Zenodo
-   usa `.zenodo.json` con precedenza su `CITATION.cff`.
-
-Guide ufficiali: [nuovo deposito](https://help.zenodo.org/docs/deposit/create-new-upload/),
-[gestione delle versioni](https://help.zenodo.org/docs/deposit/manage-versions/),
+Guide ufficiali: [gestione delle versioni](https://help.zenodo.org/docs/deposit/manage-versions/),
 [metadati per l'integrazione GitHub](https://help.zenodo.org/docs/github/describe-software/zenodo-json/).

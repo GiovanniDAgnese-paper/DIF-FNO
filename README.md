@@ -1,5 +1,6 @@
 # D'Agnese Chart Operator (DAO)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24406366.svg)](https://doi.org/10.5281/zenodo.24406366)
 [![CI](https://github.com/GiovanniDAgnese-paper/DIF-FNO/actions/workflows/ci.yml/badge.svg)](https://github.com/GiovanniDAgnese-paper/DIF-FNO/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-216%20passing-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -326,10 +327,15 @@ figures/   study/ · paper/ · repro/
 
 ## 10. Citation
 
-Cite the software using [`CITATION.cff`](CITATION.cff) or the entry below.
+Cite the archived **DIF-FNO 1.2.0 software** using
+[`CITATION.cff`](CITATION.cff) or the entry below. The
+[Zenodo record](https://doi.org/10.5281/zenodo.24406366) contains the archived ZIP for
+[commit `4e9159d`](https://github.com/GiovanniDAgnese-paper/DIF-FNO/tree/4e9159d68d248dac0de6de6f16f6f7620f173e5a).
+Zenodo labels this deposit `v9` in its record history; the software version is `1.2.0`.
+
 The DOI [10.5281/zenodo.22814077](https://doi.org/10.5281/zenodo.22814077)
-identifies an earlier DIF-FNO preprint, not this software release. For the
-software deposit, see the [Zenodo publication guide](docs/ZENODO.md).
+identifies the earlier DIF-FNO preprint. For archive and versioning details, see
+[`docs/ZENODO.md`](docs/ZENODO.md).
 
 ```bibtex
 @software{dagnese_chart_operator_2026,
@@ -338,7 +344,9 @@ software deposit, see the [Zenodo publication guide](docs/ZENODO.md).
                Adaptively Learned Charts for Neural Operators},
   version   = {1.2.0},
   year      = {2026},
-  url       = {https://github.com/GiovanniDAgnese-paper/DIF-FNO/tree/v1.2.0}
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.24406366},
+  url       = {https://doi.org/10.5281/zenodo.24406366}
 }
 ```
 

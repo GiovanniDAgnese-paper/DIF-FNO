@@ -4,6 +4,10 @@
 standard LaTeX) with the full proofs, the deterministic verification tables and
 the paired-seed benchmark.
 
+The [DIF-FNO 1.2.0 software archive](https://doi.org/10.5281/zenodo.24406366)
+contains these manuscript sources and the reproduction artifacts. The DOI
+identifies the software deposit, not a published version of the manuscript.
+
 ## Build
 
 ```bash
