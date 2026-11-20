@@ -1,4 +1,5 @@
 cff-version: 1.2.0
+type: software
 message: "If you use the D'Agnese Chart Operator, the D'Agnese Equidistribution Loss or DIF-FNO, please cite it as below."
 title: "The D'Agnese Chart Operator: Certified, Exactly Invertible, Adaptively Learned Charts for Neural Operators"
 abstract: >-
@@ -18,11 +19,11 @@ authors:
     given-names: "Giovanni"
     email: "jovannidagnese2@gmail.com"
 version: 1.2.0
-doi: 10.5281/zenodo.22814077
-date-released: "2026-10-31"
+date-released: "2026-11-20"
+doi: "10.5281/zenodo.24406366"
+url: "https://doi.org/10.5281/zenodo.24406366"
 license: MIT
 repository-code: "https://github.com/GiovanniDAgnese-paper/DIF-FNO"
-url: "https://doi.org/10.5281/zenodo.22814077"
 keywords:
   - neural operator
   - fourier neural operator

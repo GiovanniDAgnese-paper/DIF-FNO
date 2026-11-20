@@ -1,0 +1,33 @@
+{
+  "title": "The D'Agnese Chart Operator: Certified, Exactly Invertible, Adaptively Learned Charts for Neural Operators",
+  "creators": [
+    {
+      "name": "D'Agnese, Giovanni"
+    }
+  ],
+  "description": "<p>DIF-FNO 1.2.0 implements the D'Agnese Chart Operator, a Fourier neural operator evaluated on an adaptively learned triangular chart of the reference square. The chart is globally injective and has a positive Jacobian determinant and a closed-form inverse by construction. An optional equidistribution loss encourages the mesh to concentrate cells where a field has sharper features.</p><p>This software archive contains the Python source, tests, reproduction scripts, dataset generation metadata, benchmark results, figures, and LaTeX manuscript sources. The paired Darcy-flow benchmark covers six geometries and three seeds per configuration. Raw data arrays and trained checkpoints are not included; the generator for the canonical datasets is included. The archived code is based on the GitHub tag v1.2.0.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "mit",
+  "version": "1.2.0",
+  "language": "eng",
+  "keywords": [
+    "neural operator",
+    "fourier neural operator",
+    "diffeomorphism",
+    "certified invertibility",
+    "adaptive mesh",
+    "equidistribution",
+    "moving mesh",
+    "scientific machine learning",
+    "darcy flow",
+    "non-convex domains"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.22814077",
+      "relation": "isDerivedFrom",
+      "resource_type": "publication-preprint"
+    }
+  ]
+}

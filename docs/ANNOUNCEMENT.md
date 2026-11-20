@@ -63,7 +63,7 @@ the same budget, adding it improves 17 of 18 runs.
 7. Everything is reproducible in three commands, and the paper reports the null
    with its interval instead of hiding it: where the equidistribution term *does*
    pay (feature-dominated fields) it gives 2–4×, and where it has nothing to do
-   it is inert, not harmful. Repo + paper + tests: <link>.
+   it is inert, not harmful. [Archived software, manuscript sources and tests](https://doi.org/10.5281/zenodo.24406366).
 
 ## 4. Explainer hooks (for a blog post or a lab page)
 

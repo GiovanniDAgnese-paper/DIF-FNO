@@ -9,6 +9,9 @@ semantic versioning.
 The **D'Agnese Chart Operator**: the chart stops being something to penalise and
 becomes a class in which folding cannot happen.
 
+The 1.2.0 software snapshot was [archived on Zenodo](https://doi.org/10.5281/zenodo.24406366)
+on 2026-11-20.
+
 ### Added
 
 - **`dagnese_fno.geometry.DagneseTriangularChart`** — a constructive

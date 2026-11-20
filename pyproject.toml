@@ -61,7 +61,8 @@ all = ["dagnese-fno[dev,wandb,figures]"]
 Homepage = "https://github.com/GiovanniDAgnese-paper/DIF-FNO"
 Repository = "https://github.com/GiovanniDAgnese-paper/DIF-FNO"
 Issues = "https://github.com/GiovanniDAgnese-paper/DIF-FNO/issues"
-"Published paper (DOI)" = "https://doi.org/10.5281/zenodo.22814077"
+"Software archive (DOI)" = "https://doi.org/10.5281/zenodo.24406366"
+"Earlier DIF-FNO preprint (DOI)" = "https://doi.org/10.5281/zenodo.22814077"
 
 [project.scripts]
 dif-fno-train = "dagnese_fno.cli.train:main"
