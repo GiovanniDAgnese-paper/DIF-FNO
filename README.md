@@ -1,6 +1,5 @@
 # D'Agnese Chart Operator (DAO)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22814077.svg)](https://doi.org/10.5281/zenodo.22814077)
 [![CI](https://github.com/GiovanniDAgnese-paper/DIF-FNO/actions/workflows/ci.yml/badge.svg)](https://github.com/GiovanniDAgnese-paper/DIF-FNO/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-216%20passing-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -327,6 +326,11 @@ figures/   study/ · paper/ · repro/
 
 ## 10. Citation
 
+Cite the software using [`CITATION.cff`](CITATION.cff) or the entry below.
+The DOI [10.5281/zenodo.22814077](https://doi.org/10.5281/zenodo.22814077)
+identifies an earlier DIF-FNO preprint, not this software release. For the
+software deposit, see the [Zenodo publication guide](docs/ZENODO.md).
+
 ```bibtex
 @software{dagnese_chart_operator_2026,
   author    = {D'Agnese, Giovanni},
@@ -334,8 +338,7 @@ figures/   study/ · paper/ · repro/
                Adaptively Learned Charts for Neural Operators},
   version   = {1.2.0},
   year      = {2026},
-  doi       = {10.5281/zenodo.22814077},
-  url       = {https://github.com/GiovanniDAgnese-paper/DIF-FNO}
+  url       = {https://github.com/GiovanniDAgnese-paper/DIF-FNO/tree/v1.2.0}
 }
 ```
 
