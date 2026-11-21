@@ -8,7 +8,11 @@
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Certified](https://img.shields.io/badge/det%20J%20%E2%89%A5%20%CF%B5%C2%B2%20%3E%200-for%20every%20%CE%B8-brightgreen.svg)](docs/THEORY.md)
 
-A Fourier neural operator evaluated on a **certified, adaptively learned chart**.
+**DIF-FNO** is Giovanni D'Agnese's research software for Fourier neural
+operators on irregular domains. The current method, the **D'Agnese Chart
+Operator (DAO)**, evaluates an FNO on a certified, adaptively learned chart of
+the reference square. The [archived software (v1.2.0)](https://doi.org/10.5281/zenodo.24406366)
+is distinct from the historical barrier-only approach (§8).
 
 Deforming the grid of a neural operator is an old idea with a fatal flaw: a
 learned deformation has no reason to be a diffeomorphism, and a folded grid
@@ -18,7 +22,7 @@ fine. Previous work *penalises* folding. This repository removes it.
 | object | what it is | guarantee |
 |---|---|---|
 | **D'Agnese chart** (`DagneseTriangularChart`) | a constructive diffeomorphism of the reference square, `Φ(ξ) = (g(ξ₁), h(ξ₁,ξ₂))`, built from strictly positive increments | injective, `det J > 0` **as a product of positive factors**, closed-form inverse at arbitrary points, `det J ≥ ε²` for every parameter value |
-| **D'Agnese Chart Operator** (`"chart"`) | an FNO evaluated on the chart, `u = P⁻¹ F_θ(Φ, P a)` | **exactly the FNO baseline at initialisation** (3e-8) — a strict super-set of it |
+| **D'Agnese Chart Operator** (`"chart"`) | an FNO evaluated on the chart, `u = P⁻¹ F_θ(Φ, P a)` | **recovers the FNO baseline at initialisation** (measured difference ≈ 3e-8 in float32) |
 | **D'Agnese Equidistribution Loss** (`DagneseEquidistributionLoss`) | normalised variance of the monitor mass per cell | zero **iff** the mesh equidistributes; scale free; `max_C M_C/M̄ ≤ 1 + √(N_c L)` |
 
 No penalty, no constraint projection, no trust region: the failure mode is
@@ -32,7 +36,7 @@ coords = torch.stack(torch.meshgrid(torch.linspace(-1, 1, 64),
                                     torch.linspace(-1, 1, 64), indexing="ij"), -1)
 a = torch.rand(1, 64, 64)
 
-model = DagneseChartOperator()                 # at init == FNO, bit for bit
+model = DagneseChartOperator()                 # at init, matches its FNO backbone up to round-off
 u, aux = model(coords, a)                      # u: (1,64,64); aux carries the chart
 aux["phi"].shape, aux["det"].min()             # (1,64,64,2), 1.0
 aux["det_lb"]                                  # certified lower bound, > 0 for all θ
@@ -82,14 +86,14 @@ construction. We report the cost everywhere.
 | closed-form inverse, on a grid and at arbitrary points | **theorem** | P5.iii |
 | `det J ≥ (2ε/(KΔξ))² = ε²` for every θ, N and deformation size | **theorem** | P5.iv |
 | the chart is the identity at initialisation | **theorem** | P5.v |
-| the class is closed under composition | **theorem** | P5.vi |
+| composition preserves injectivity and orientation, not the single-layer fixed-knot form | **theorem** | P5.vi |
 | pullback/pushforward round trip is `O(h²)` | **theorem** | P6 |
 | the equidistribution loss vanishes iff equidistributed, is scale free, bounds the worst cell | **theorem** | P7.i–iii |
 | equidistribution minimises a certified bound on the representation error | **theorem** | P7.iv |
-| the operator is exactly the baseline at initialisation | **measured** (3e-8) | §4 |
+| the operator matches the baseline at initialisation up to round-off | **measured** (≈ 3e-8) | §4 |
 | equidistribution improves the *representation* of feature-dominated fields | **measured** (2–4×) | §3 |
-| the chart does **not** cost accuracy | **measured**: ΔL2 = −0.0004, 95 % CI [−0.018, +0.017] over 18 paired runs | §4 |
-| the chart cannot fold, for any parameters | **theorem + measured**: 0.00 % folded cells, `min det J ≥ 0.321`, certificate `≥ 0.204` on all 54 runs | §4, P5 |
+| no statistically significant pooled L2 difference vs. FNO was detected | **measured**: ΔL2 = −0.0004, 95 % CI [−0.018, +0.017] over 18 paired runs | §4 |
+| the chart cannot fold, for any parameters | **theorem + measured**: 0.00 % folded cells, worst observed `min det J ≈ 0.321`, certificate `≥ 0.204` on 36 chart runs (54 runs including FNO) | §4, P5 |
 | the certificate is tight | **no** — it is a worst case over θ | P5 scope note |
 
 Full proofs: [`docs/THEORY.md`](docs/THEORY.md) (Part II). Manuscript:
@@ -178,20 +182,22 @@ error by `-0.0004` (95 % CI `[-0.018, +0.017]`, t = -0.04, p = 0.97), with 10 of
 `-0.0047` (p = 0.57, 12/18, 5/6 geometries) — a hint, not a result. On H1 the
 equidistributing chart is `+0.0199` (n.s.).
 
-**What it buys.** That is the claim, and it is worth stating plainly: the chart
-is **harmless** and **provably cannot fold**. Every one of the 54 runs has
-0.00 % folded cells, `min det J >= 0.321`, a positive certified bound
-(`>= 0.204`) and an exact-inverse error `<= 3.6e-7`. The v1 penalty buys the same
-accuracy and folds 12-22 % of its cells doing it. A method whose failure mode is
-outside the model class does not have to pay for it in accuracy.
+**What it buys.** The chart is injective by construction. The 36 chart runs
+(out of 54 total runs, including 18 FNO baselines) had 0.00 % folded cells,
+a worst observed minimum `det J ≈ 0.321`, a certified bound of at least `0.204`
+and an inverse-consistency error of at most `3.6e-7`. In the separate v1
+benchmark, the **unpenalised** `dif-nobar` ablation folded 12–22 % of cells
+across the three tested domains. The softplus-barrier variant recorded no
+folding in those experiments but had no structural certificate (§8).
 
-**Why the equidistribution term is inert here.** The learned chart barely moves
+**How the equidistribution term behaved here.** The learned chart barely moves
 on the canonical data (`min det J = 0.95` on the star, `0.32` on the L-shape,
 `0.45` on the airfoil) because the gradient monitor is dominated by the mask
 boundary and the canonical Darcy solutions have no layers to resolve. The
 deterministic representation study (section 3) is where the term earns its
 place: 2-4x on feature-dominated fields, and a negative row (0.54x) on a smooth
-one. This benchmark says the term costs nothing where it has nothing to do.
+one. Within the same architecture, the paired L2 comparison of `chart-eq`
+against `chart-fixed` was worse on average (see the ablation above).
 
 **The one caveat that matters.** The star is underpowered: its paired CI is
 `[-0.22, +0.24]` because the FNO itself varies by 0.22-0.31 across seeds on a
@@ -203,12 +209,14 @@ pooled test is dominated by it. Every other geometry has a CI narrower than
 
 ## 5. What the numbers do *not* say
 
-* Nothing here *bounds* the PDE error, and §4 measures **no** accuracy gain:
-  the chart is neutral. The guarantee is about folding, not about error.
+* Nothing here *bounds* the PDE error. The comparison against FNO did not
+  detect a statistically significant accuracy difference; it does not establish
+  equivalence. The guarantee is about folding, not about prediction error.
 * `ε²` is a worst case over the whole parameter space: a trained chart has
   `min det J = 0.32–0.95` while the certificate reports `1e-6`. Both are reported.
-* Equidistribution is not universally beneficial: it hurts on a field without
-  structure (§3, third row) and helps on the PDE benchmark (§4).
+* Equidistribution is not universally beneficial: representation improves for
+  the tested layer and ridge but worsens for the tested smooth field (§3).
+  This is not a demonstrated PDE accuracy gain (§4).
 * The chart costs ×2.8 wall clock at 64² on CPU.
 * The benchmark is *not* comparable with the published v1 table: the data
   pipeline was rewritten (see §8), so `results/repro` and `results/v2` must not
@@ -335,7 +343,8 @@ Zenodo labels this deposit `v9` in its record history; the software version is `
 
 The DOI [10.5281/zenodo.22814077](https://doi.org/10.5281/zenodo.22814077)
 identifies the earlier DIF-FNO preprint. For archive and versioning details, see
-[`docs/ZENODO.md`](docs/ZENODO.md).
+[`docs/ZENODO.md`](docs/ZENODO.md). See also the
+[public metadata audit](docs/PUBLIC_RECORDS.md).
 
 ```bibtex
 @software{dagnese_chart_operator_2026,

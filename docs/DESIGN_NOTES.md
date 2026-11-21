@@ -182,8 +182,9 @@ reappearing in the PDE benchmark: equidistribution is not a universal improver,
 and the theory never said it was.
 
 **What survives, and is worth publishing.** The guarantee: 0.00 % folded cells,
-`min det J >= 0.321`, a positive certified bound (`>= 0.204`) and an
-exact-inverse error `<= 3.6e-7` on all 54 runs, at +0.5 % parameters and x2.8
-wall clock. The v1 penalty buys the same accuracy and folds 12-22 % of its cells.
-The trade is "the guarantee is free in accuracy", not "the chart is more
-accurate" — and the second claim is the one we removed from the paper.
+worst observed `min det J ≈ 0.321`, a positive certified bound (`>= 0.204`)
+and inverse-consistency error `<= 3.6e-7` on the 36 chart runs (54 runs total),
+with +0.5 % parameters and ×2.8 wall clock in the CPU timing study. The v1
+`dif-nobar` ablation, not the barrier variant, folded 12–22 % of cells across
+three domains. The canonical comparison did not detect a significant accuracy
+difference against FNO; it does not prove equivalence.

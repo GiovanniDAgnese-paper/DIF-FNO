@@ -80,9 +80,11 @@ on 2026-11-20.
   over 18 paired runs: `dL2 = -0.0004` (95 % CI `[-0.018, +0.017]`, t = -0.04,
   p = 0.97, 10/18 runs, 3/6 geometry means negative); `dH1 = +0.0199` (n.s.).
   The chart *alone* is `-0.0047` (p = 0.57, 12/18, 5/6) -- a hint, not a result.
-- On the same 54 runs: **0.00 % folded cells**, `min det J >= 0.321`, certified
-  bound `>= 0.204`, exact-inverse error `<= 3.6e-7`. The v1 penalty reaches the
-  same accuracy while folding 12-22 % of its cells.
+- Among the 54 total runs, the 36 chart runs had **0.00 % folded cells**,
+  worst observed `min det J ≈ 0.321`, certified bound `>= 0.204` and
+  inverse-consistency error `<= 3.6e-7`. In the separate v1 benchmark,
+  `dif-nobar` (the unpenalised variant) folded 12–22 % of cells across three
+  domains.
 - Cost: x2.8 wall clock per training step at 64^2 on CPU (`scripts/bench_timing.py`);
   +1 602 parameters (+0.5 %).
 - **Retracted claim.** An earlier state of this branch reported `dL2 = -0.0182`
