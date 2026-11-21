@@ -289,16 +289,19 @@ The D'Agnese chart reports $\varepsilon^2 = 10^{-6} > 0$ for **every** parameter
 value with **no** constraint on the deformation.  $\;\square$
 
 **P5.v (Identity at initialisation).**  A zeroed output layer gives constant
-logits, hence a uniform softmax and $\Phi = \mathrm{Id}$ to the last bit; the
-mixture $\varepsilon/K$ preserves exactness of this statement for every
-$\varepsilon$.  This is what makes the operator a *strict superset* of the
-baseline: at $t=0$ it computes the FNO output bit-for-bit (measured: $3\cdot10^{-8}$).
+logits, hence a uniform softmax and $\Phi = \mathrm{Id}$ in exact arithmetic; the
+mixture $\varepsilon/K$ preserves this for every $\varepsilon$. The initial
+operator recovers its FNO backbone up to floating-point round-off (measured
+maximum difference: about $3\cdot10^{-8}$).
 
-**P5.vi (Closure).**  Compositions of D'Agnese charts are D'Agnese charts
-(each is injective and orientation preserving; the second layer is evaluated at
-the images of the first by bilinear interpolation, which *is* the piecewise
-bilinear map it represents).  The class contains the identity and is closed under
-composition: a monoid of admissible charts, not a ball around the identity.
+**P5.vi (Composition).** Composing chart layers preserves injectivity and
+orientation wherever the layer Jacobians are defined. The chain rule multiplies
+the layer determinants (so $m$ layers with a common floor $\varepsilon^2$ have
+floor $\varepsilon^{2m}$ in exact arithmetic). This is not closure in the
+single-layer fixed-knot parameterisation. For example, let the first coordinate
+$g$ interpolate $(0,0), (1/2,3/4), (1,1)$ and leave the second coordinate unchanged.
+Then $g\circ g$ has a new slope change at $g^{-1}(1/2)=1/3$, inside the original
+cell $(0,1/2)$.
 
 > **Why the mixture $\varepsilon/K$?**  A pure softmax is strictly positive in
 > exact arithmetic but *underflows to zero* in float32 once the logits span
@@ -495,9 +498,8 @@ reported here so that the reader does not over-read P8.  No theorem is claimed.
   bilinear interpolant of a D'Agnese chart is globally injective because the
   construction is separable and monotone in each argument — that part is a
   theorem, not a discretisation statement — but the *composed* multi-layer chart
-  is injective only in the sense that a composition of injective maps is
-  injective, and each layer is evaluated at the previous layer's images by
-  bilinear interpolation whose exactness is asserted on the grid nodes.
+  is injective as a composition of injective maps. An interpolant resampled
+  on the original grid is not generally equal to that composition (P5.vi).
 * The lower bound is $\varepsilon^2$: it is *positive*, and it is *not tight*.
   A trained chart can have $\min\det J \approx 0.8$ while the certificate reports
   $10^{-6}$.  The certificate is a worst-case statement over the whole parameter

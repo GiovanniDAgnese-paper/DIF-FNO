@@ -59,13 +59,9 @@ deformation reaches the identity's Lipschitz neighbourhood.
 **(v) Identity at initialisation.**  A zero output layer gives constant logits,
 a uniform softmax and :math:`\\Phi=\\mathrm{Id}` exactly.
 
-**(vi) Closure under composition.**  ``n_layers > 1`` composes charts; each
-composition is injective and orientation preserving, and the second layer is
-evaluated at the points of the first by bilinear interpolation, which *is* the
-piecewise-bilinear map it represents.
-
-The class contains the identity and is closed under composition: it is a monoid
-of admissible charts, not a neighbourhood of the identity.
+**(vi) Composition.** ``n_layers > 1`` composes injective, orientation-preserving
+charts. The composition is not generally a single chart on the same fixed knots:
+preimages of later layers' knots can introduce new slope changes.
 """
 
 from __future__ import annotations
